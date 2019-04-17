@@ -1,0 +1,21 @@
+# Package Files
+*.jar
+*.war
+*.ear
+
+# ignore the output
+out/
+target/
+*.class
+
+# maven
+**/dependency-reduced-pom.xml
+
+# IDE - IntelliJ
+.idea/
+*.iml
+
+# IDE - Eclipse
+.settings/
+.project
+.classpath

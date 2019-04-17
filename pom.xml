@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>co.hygames</groupId>
+    <artifactId>gamebox</artifactId>
+    <version>0.0.1</version>
+
+    <name>GameBox</name>
+    <description>Hub for a variety of games</description>
+    <url>https://gamebox.hygames.co</url>
+
+    <distributionManagement>
+        <repository>
+            <id>nikl-repo</id>
+            <url>http://repo.nikl.me/artifactory/public</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <url>https://github.com/hygames-team/gamebox</url>
+        <connection>git@github.com:hygames-team/gamebox.git</connection>
+    </scm>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+</project>
