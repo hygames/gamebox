@@ -24,6 +24,23 @@
         <connection>git@github.com:hygames-team/gamebox.git</connection>
     </scm>
 
+    <repositories>
+        <repository>
+            <id>hikari-repo</id>
+            <url>https://mvnrepository.com/artifact/com.zaxxer/HikariCP</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- HikariCP -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.3.1</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

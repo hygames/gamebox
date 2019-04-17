@@ -1,5 +1,5 @@
 # GameBox
 
-*GameBox is a hub vor a variety of games in HyTale*
+*GameBox is a hub for a variety of games in HyTale*
 
 **WIP**
