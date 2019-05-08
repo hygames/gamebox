@@ -8,12 +8,12 @@ import java.io.File;
 /**
  * @author Niklas Eicker
  */
-public abstract class Module {
+public abstract class GameBoxModule {
     protected String identifier;
     protected GameBox gameBox;
     protected ModuleLanguage moduleLanguage;
 
-    public Module(GameBox gameBox, String identifier) {
+    public GameBoxModule(GameBox gameBox, String identifier) {
         this.gameBox = gameBox;
         this.identifier = identifier;
     }
