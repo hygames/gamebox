@@ -22,6 +22,7 @@ import co.hygames.gamebox.cloud.json.DependencyData;
 import co.hygames.gamebox.cloud.json.ModuleData;
 import co.hygames.gamebox.cloud.json.VersionData;
 import com.google.gson.Gson;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
 
@@ -81,14 +82,17 @@ public class TestCloudModuleFromJson {
     }
 
     @Test
+    @DisplayName("Comparing parsed and manually loaded Module")
     public void parseTestCloudModule() throws FileNotFoundException {
         Gson gson = new Gson();
         ModuleData fileModule = gson.fromJson(new FileReader(testCloudModuleFile), ModuleData.class);
-        assertEquals(fileModule.getId(), testCloudModule.getId(),"Not the same id");
-        assertEquals(fileModule.getAuthor(), testCloudModule.getAuthor(),"Not the same author");
-        assertEquals(fileModule.getName(), testCloudModule.getName(),"Not the same name");
-        assertEquals(fileModule.getDescription(), testCloudModule.getDescription(),"Not the same description");
-        assertEquals(fileModule.getVersions().size(), testCloudModule.getVersions().size(),"Not the same number of versions");
+        assertAll(
+                () -> assertEquals(fileModule.getId(), testCloudModule.getId(),"Not the same id"),
+                () -> assertEquals(fileModule.getAuthor(), testCloudModule.getAuthor(),"Not the same author"),
+                () -> assertEquals(fileModule.getName(), testCloudModule.getName(),"Not the same name"),
+                () -> assertEquals(fileModule.getDescription(), testCloudModule.getDescription(),"Not the same description"),
+                () -> assertEquals(fileModule.getVersions().size(), testCloudModule.getVersions().size(),"Not the same number of versions")
+        );
         Iterator<VersionData> itManualModule = testCloudModule.getVersions().iterator();
         Iterator<VersionData> itFileModule = fileModule.getVersions().iterator();
 
