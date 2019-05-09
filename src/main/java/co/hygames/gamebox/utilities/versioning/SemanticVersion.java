@@ -111,7 +111,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
 
 	/**
 	 * Construct a version object by parsing a string.
-	 * 
+	 *
 	 * @param version
 	 *          version in flat string format
 	 * @throws ParseException
@@ -130,6 +130,15 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
 		patch = vParts[2];
 		preRelase = preParts.toArray(new String[preParts.size()]);
 		buildMeta = metaParts.toArray(new String[metaParts.size()]);
+	}
+
+	/**
+	 * Remove meta data (pre-release and build)
+	 *
+	 * @return new SemanticVersion instance without meta data
+	 */
+	public SemanticVersion withoutMetaData() {
+		return new SemanticVersion(major, minor, patch);
 	}
 
 	/**

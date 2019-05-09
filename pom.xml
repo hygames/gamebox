@@ -27,7 +27,7 @@
     <version>1.0.0</version>
     <name>GameBox</name>
     <description>Hub for a variety of games</description>
-    <url>https://gamebox.hygames.co</url>
+    <url>http://gamebox.hygames.co</url>
 
     <distributionManagement>
         <repository>

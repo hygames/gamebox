@@ -18,9 +18,9 @@
 
 package co.hygames.gamebox.cloud;
 
-import co.hygames.gamebox.cloud.json.DependencyData;
-import co.hygames.gamebox.cloud.json.ModuleData;
-import co.hygames.gamebox.cloud.json.VersionData;
+import co.hygames.gamebox.cloud.data.DependencyData;
+import co.hygames.gamebox.cloud.data.ModuleData;
+import co.hygames.gamebox.cloud.data.VersionData;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

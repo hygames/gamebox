@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.cloud.json;
+package co.hygames.gamebox.cloud.data;
 
 import java.io.Serializable;
 import java.util.List;

@@ -45,4 +45,8 @@ public class GameBox {
         // ToDo: logger from Hytale?
         return null;
     }
+
+    public static void debug(String message) {
+        System.out.println("GB debug: " + message);
+    }
 }
