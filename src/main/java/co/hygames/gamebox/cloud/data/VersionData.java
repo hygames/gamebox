@@ -31,6 +31,10 @@ public class VersionData implements Serializable {
     @Expose
     private String version;
 
+    @SerializedName("updatedAt")
+    @Expose
+    private Long updatedAt;
+
     @SerializedName("dependencies")
     @Expose
     private List<DependencyData> dependencies = null;
@@ -60,6 +64,19 @@ public class VersionData implements Serializable {
 
     public VersionData withVersion(String version) {
         this.version = version;
+        return this;
+    }
+
+    public Long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public VersionData withUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
         return this;
     }
 

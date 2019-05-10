@@ -43,6 +43,18 @@ public class ModuleData implements Serializable {
     @Expose
     private String description;
 
+    @SerializedName("sourceUrl")
+    @Expose
+    private String sourceUrl;
+
+    @SerializedName("latestVersion")
+    @Expose
+    private String latestVersion;
+
+    @SerializedName("lastUpdateAt")
+    @Expose
+    private Long lastUpdateAt;
+
     @SerializedName("versions")
     @Expose
     private List<VersionData> versions = null;
@@ -109,6 +121,45 @@ public class ModuleData implements Serializable {
 
     public ModuleData withDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
+    public ModuleData withSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+        return this;
+    }
+
+    public String getLatestVersion() {
+        return latestVersion;
+    }
+
+    public void setLatestVersion(String latestVersion) {
+        this.latestVersion = latestVersion;
+    }
+
+    public ModuleData withLatestVersion(String latestVersion) {
+        this.latestVersion = latestVersion;
+        return this;
+    }
+
+    public Long getLastUpdateAt() {
+        return lastUpdateAt;
+    }
+
+    public void setLastUpdateAt(Long lastUpdateAt) {
+        this.lastUpdateAt = lastUpdateAt;
+    }
+
+    public ModuleData withLastUpdateAt(Long lastUpdateAt) {
+        this.lastUpdateAt = lastUpdateAt;
         return this;
     }
 

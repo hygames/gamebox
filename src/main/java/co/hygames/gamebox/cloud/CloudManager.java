@@ -18,8 +18,29 @@
 
 package co.hygames.gamebox.cloud;
 
+import co.hygames.gamebox.GameBox;
+import co.hygames.gamebox.cloud.data.ModuleData;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author Niklas Eicker
  */
 public class CloudManager {
+    private static final String API_BASE_URL = "https://api.hygames.co/";
+    private static final Gson GSON = new Gson();
+
+    private GameBox gameBox;
+    private Map<String, ModuleData> cloudContent = new HashMap<>();
+
+    public CloudManager(GameBox gameBox) {
+        this.gameBox = gameBox;
+    }
+
+    public void updateCloudContent() {
+        cloudContent.clear();
+
+    }
 }

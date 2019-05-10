@@ -3,9 +3,13 @@
   "author": "Nikl",
   "name": "Test module",
   "description": "This module is only for test purposes",
+  "sourceUrl": "https://github.com/hygames-team/api-hygames-co",
+  "latestVersion": "1.1.0",
+  "lastUpdateAt": 1239,
   "versions": [
     {
       "version": "1.0.0",
+      "updatedAt": 1234,
       "dependencies": [
         {
           "name": "gamebox",
@@ -20,6 +24,7 @@
     },
     {
       "version": "1.1.0",
+      "updatedAt": 1239,
       "dependencies": [
         {
           "name": "gamebox",
