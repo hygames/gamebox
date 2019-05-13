@@ -25,6 +25,7 @@ import java.util.logging.Logger;
  * @author Niklas Eicker
  */
 public class GameBox {
+    public static final String ID = "gamebox";
     private static GameBox instance;
 
     public void onEnable() {

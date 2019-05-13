@@ -39,4 +39,8 @@ public abstract class GameBoxModule {
     public abstract File getModuleFolder();
 
     public abstract File getLanguageFolder();
+
+    public String getIdentifier() {
+        return this.identifier;
+    }
 }
