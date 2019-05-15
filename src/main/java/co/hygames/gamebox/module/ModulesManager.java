@@ -21,6 +21,8 @@ package co.hygames.gamebox.module;
 import co.hygames.gamebox.GameBox;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author Niklas Eicker
@@ -28,19 +30,25 @@ import java.io.File;
 public class ModulesManager {
     private GameBox gameBox;
     private File modulesDir;
-    private File gamesDir;
+    private File modulesSettings;
 
     public ModulesManager(GameBox gameBox) {
         this.gameBox = gameBox;
         modulesDir = new File(gameBox.getDataFolder(), "modules");
-        gamesDir = new File(gameBox.getDataFolder(), "games");
         final boolean newModulesDir = modulesDir.mkdirs();
-        final boolean newGamesDir = gamesDir.mkdirs();
         if (newModulesDir) {
             gameBox.getLogger().info("Created Modules Directory");
         }
-        if (newGamesDir) {
-            gameBox.getLogger().info("Created Games Directory");
+        modulesSettings = new File(modulesDir, "modules.yml");
+        final boolean needNewSettingsFile = !modulesSettings.isFile();
+        if (needNewSettingsFile) {
+            try {
+                modulesSettings.createNewFile();
+                gameBox.getLogger().info("Created a new module settings file");
+            } catch (IOException e) {
+                gameBox.getLogger().warning("Error while attempting to create a new module settings file:");
+                e.printStackTrace();
+            }
         }
     }
 }

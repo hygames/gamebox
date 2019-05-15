@@ -20,8 +20,12 @@ package co.hygames.gamebox.cloud;
 
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.cloud.data.ModuleData;
+import co.hygames.gamebox.exceptions.ModuleCloudException;
 import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +33,7 @@ import java.util.Map;
  * @author Niklas Eicker
  */
 public class CloudManager {
-    private static final String API_BASE_URL = "https://api.hygames.co/";
+    private static final String API_BASE_URL = "https://api.hygames.co/gamebox/";
     private static final Gson GSON = new Gson();
 
     private GameBox gameBox;
@@ -39,8 +43,28 @@ public class CloudManager {
         this.gameBox = gameBox;
     }
 
-    public void updateCloudContent() {
+    public void updateCloudContent() throws ModuleCloudException {
         cloudContent.clear();
+        try {
+            ModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), ModuleData[].class);
+            for (ModuleData moduleData : modulesData) {
+                cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
+            }
+        } catch (IOException e) {
+            throw new ModuleCloudException(e);
+        }
+    }
 
+    public void updateCloudModule(int moduleID) throws ModuleCloudException {
+        try {
+            ModuleData moduleData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules/" + moduleID).openStream()), ModuleData.class);
+            cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
+        } catch (IOException e) {
+            throw new ModuleCloudException(e);
+        }
+    }
+
+    public ModuleData getModuleData(int moduleID) {
+        return cloudContent.get(moduleID);
     }
 }
