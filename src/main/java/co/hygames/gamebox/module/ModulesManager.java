@@ -19,10 +19,11 @@
 package co.hygames.gamebox.module;
 
 import co.hygames.gamebox.GameBox;
+import co.hygames.gamebox.utilities.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author Niklas Eicker
@@ -45,10 +46,16 @@ public class ModulesManager {
             try {
                 modulesSettings.createNewFile();
                 gameBox.getLogger().info("Created a new module settings file");
+                registerAllModules();
             } catch (IOException e) {
                 gameBox.getLogger().warning("Error while attempting to create a new module settings file:");
                 e.printStackTrace();
             }
         }
+    }
+
+    private void registerAllModules() {
+        List<File> jars = FileUtility.getAllJars(modulesDir);
+        // ToDo: read version, dependencies into module settings and save defaults in module settings file
     }
 }

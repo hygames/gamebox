@@ -32,6 +32,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -161,5 +162,18 @@ public class FileUtility {
         initialStream.read(buffer);
         OutputStream outStream = new FileOutputStream(targetFile);
         outStream.write(buffer);
+    }
+
+    public static List<File> getAllJars(String subFolder) {
+        File folder = new File(GameBox.getInstance().getDataFolder(), subFolder);
+        return getAllJars(folder);
+    }
+
+    public static List<File> getAllJars(File folder) {
+        if (!folder.exists()) {
+            return new ArrayList<>();
+        }
+        FilenameFilter fileNameFilter = (dir, name) -> name.endsWith(".jar");
+        return Arrays.asList(folder.listFiles(fileNameFilter));
     }
 }
