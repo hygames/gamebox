@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "id": "test-module",
   "author": "Nikl",
   "name": "Test module",
   "description": "This module is only for test purposes",
@@ -12,7 +12,7 @@
       "updatedAt": 1234,
       "dependencies": [
         {
-          "name": "gamebox",
+          "id": "gamebox",
           "versionRange": "~> 1.0"
         }
       ],
@@ -27,7 +27,7 @@
       "updatedAt": 1239,
       "dependencies": [
         {
-          "name": "gamebox",
+          "id": "gamebox",
           "versionRange": "~> 1.0"
         }
       ],

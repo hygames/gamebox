@@ -26,9 +26,9 @@ import com.google.gson.annotations.SerializedName;
  * @author Niklas Eicker
  */
 public class DependencyData implements Serializable {
-    @SerializedName("name")
+    @SerializedName("id")
     @Expose
-    private String name;
+    private String id;
 
     @SerializedName("versionRange")
     @Expose
@@ -39,22 +39,22 @@ public class DependencyData implements Serializable {
     public DependencyData() {
     }
 
-    public DependencyData(String name, String versionRange) {
+    public DependencyData(String id, String versionRange) {
         super();
-        this.name = name;
+        this.id = id;
         this.versionRange = versionRange;
     }
 
-    public String getName() {
-        return name;
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public DependencyData withName(String name) {
-        this.name = name;
+    public DependencyData withId(String id) {
+        this.id = id;
         return this;
     }
 

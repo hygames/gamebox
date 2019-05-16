@@ -29,7 +29,7 @@ import com.google.gson.annotations.SerializedName;
 public class ModuleData implements Serializable {
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
 
     @SerializedName("author")
     @Expose
@@ -64,7 +64,7 @@ public class ModuleData implements Serializable {
     public ModuleData() {
     }
 
-    public ModuleData(Integer id, String author, String name, String description, List<VersionData> versions) {
+    public ModuleData(String id, String author, String name, String description, List<VersionData> versions) {
         this.id = id;
         this.author = author;
         this.name = name;
@@ -72,15 +72,15 @@ public class ModuleData implements Serializable {
         this.versions = versions;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public ModuleData withId(Integer id) {
+    public ModuleData withId(String id) {
         this.id = id;
         return this;
     }
