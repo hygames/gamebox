@@ -58,4 +58,8 @@ public class ModulesManager {
         List<File> jars = FileUtility.getAllJars(modulesDir);
         // ToDo: read version, dependencies into module settings and save defaults in module settings file
     }
+
+    public File getModulesDir() {
+        return this.modulesDir;
+    }
 }

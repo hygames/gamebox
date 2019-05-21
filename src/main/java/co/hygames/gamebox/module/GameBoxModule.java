@@ -29,18 +29,37 @@ import java.io.File;
 public abstract class GameBoxModule {
     protected String identifier;
     protected GameBox gameBox;
+    private File languageFolder;
+    private File moduleFolder;
     protected ModuleLanguage moduleLanguage;
 
-    public GameBoxModule(GameBox gameBox, String identifier) {
-        this.gameBox = gameBox;
-        this.identifier = identifier;
+    GameBoxModule() {}
+
+    public File getModuleFolder() {
+        if (moduleFolder != null) return moduleFolder;
+        moduleFolder = new File(gameBox.getModulesManager().getModulesDir(), identifier);
+        if (!moduleFolder.isDirectory()) moduleFolder.mkdirs();
+        return moduleFolder;
     }
 
-    public abstract File getModuleFolder();
-
-    public abstract File getLanguageFolder();
+    public File getLanguageFolder() {
+        if (languageFolder != null) return languageFolder;
+        languageFolder = new File(gameBox.getLanguageDir(), identifier);
+        if (!languageFolder.isDirectory()) languageFolder.mkdirs();
+        return languageFolder;
+    }
 
     public String getIdentifier() {
         return this.identifier;
+    }
+
+    void setGameBox(GameBox gameBox) throws IllegalAccessException {
+        if (this.gameBox != null) throw new IllegalAccessException("Cannot change the GameBox instance in a module");
+        this.gameBox = gameBox;
+    }
+
+    void setIdentifier(String moduleId) throws IllegalAccessException {
+        if (this.identifier != null) throw new IllegalAccessException("Cannot change the identifier in a module");
+        this.identifier = moduleId;
     }
 }

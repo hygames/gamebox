@@ -18,6 +18,8 @@
 
 package co.hygames.gamebox;
 
+import co.hygames.gamebox.module.ModulesManager;
+
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -27,6 +29,7 @@ import java.util.logging.Logger;
 public class GameBox {
     public static final String ID = "gamebox";
     private static GameBox instance;
+    private ModulesManager modulesManager;
 
     public void onEnable() {
         instance = this;
@@ -49,5 +52,14 @@ public class GameBox {
 
     public static void debug(String message) {
         System.out.println("GB debug: " + message);
+    }
+
+    public ModulesManager getModulesManager() {
+        return modulesManager;
+    }
+
+    public File getLanguageDir() {
+        // ToDo: move to responsible langauge class
+        return null;
     }
 }

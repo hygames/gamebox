@@ -54,9 +54,9 @@ public enum Permission {
         return assignedForModule(gbPlayer, module.getIdentifier());
     }
 
-    public boolean assignedForModule(GbPlayer gbPlayer, String moduleID) {
+    public boolean assignedForModule(GbPlayer gbPlayer, String moduleId) {
         if (!this.perGame) throw new IllegalArgumentException("General permission checked with module context!");
-        String perm = this.perm.replace("{}", moduleID);
+        String perm = this.perm.replace("{}", moduleId);
         // ToDo
         throw new UnsupportedOperationException("permissions are not implemented yet");
     }
