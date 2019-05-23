@@ -16,12 +16,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.exceptions;
+package co.hygames.gamebox.exceptions.module;
+
+import co.hygames.gamebox.exceptions.GameBoxException;
 
 /**
  * Exception for issues concerning the module cloud
  */
-public class ModuleCloudException extends Exception {
+public class ModuleCloudException extends GameBoxException {
     public ModuleCloudException() {
         super("There appears to be a problem with the module cloud");
     }

@@ -33,7 +33,7 @@ public abstract class GameBoxModule {
     private File moduleFolder;
     protected ModuleLanguage moduleLanguage;
 
-    GameBoxModule() {}
+    protected GameBoxModule() {}
 
     public File getModuleFolder() {
         if (moduleFolder != null) return moduleFolder;

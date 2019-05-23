@@ -23,7 +23,9 @@ import co.hygames.gamebox.utilities.FileUtility;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Niklas Eicker
@@ -32,6 +34,7 @@ public class ModulesManager {
     private GameBox gameBox;
     private File modulesDir;
     private File modulesSettings;
+    private Map<String, LocalModule> localModules = new HashMap<>();
 
     public ModulesManager(GameBox gameBox) {
         this.gameBox = gameBox;
@@ -52,10 +55,17 @@ public class ModulesManager {
                 e.printStackTrace();
             }
         }
+        collectLocalModules();
+    }
+
+    private void collectLocalModules() {
+        List<File> jars = FileUtility.getAllJars(modulesDir);
+
     }
 
     private void registerAllModules() {
         List<File> jars = FileUtility.getAllJars(modulesDir);
+
         // ToDo: read version, dependencies into module settings and save defaults in module settings file
     }
 

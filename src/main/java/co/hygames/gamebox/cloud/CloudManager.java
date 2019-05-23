@@ -19,13 +19,17 @@
 package co.hygames.gamebox.cloud;
 
 import co.hygames.gamebox.GameBox;
-import co.hygames.gamebox.cloud.data.ModuleData;
-import co.hygames.gamebox.exceptions.ModuleCloudException;
+import co.hygames.gamebox.cloud.data.CloudModuleData;
+import co.hygames.gamebox.database.Callback;
+import co.hygames.gamebox.exceptions.module.ModuleCloudException;
+import co.hygames.gamebox.module.LocalModule;
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +41,8 @@ public class CloudManager {
     private static final Gson GSON = new Gson();
 
     private GameBox gameBox;
-    private Map<String, ModuleData> cloudContent = new HashMap<>();
+    private Map<String, CloudModuleData> cloudContent = new HashMap<>();
+    private Map<String, Callback<LocalModule>> downlodingModules = new HashMap<>();
 
     public CloudManager(GameBox gameBox) {
         this.gameBox = gameBox;
@@ -46,8 +51,8 @@ public class CloudManager {
     public void updateCloudContent() throws ModuleCloudException {
         cloudContent.clear();
         try {
-            ModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), ModuleData[].class);
-            for (ModuleData moduleData : modulesData) {
+            CloudModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), CloudModuleData[].class);
+            for (CloudModuleData moduleData : modulesData) {
                 cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
             }
         } catch (IOException e) {
@@ -55,16 +60,27 @@ public class CloudManager {
         }
     }
 
-    public void updateCloudModule(int moduleID) throws ModuleCloudException {
+    public void updateCloudModule(String moduleId) throws ModuleCloudException {
         try {
-            ModuleData moduleData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules/" + moduleID).openStream()), ModuleData.class);
+            CloudModuleData moduleData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules/" + moduleId).openStream()), CloudModuleData.class);
             cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
         } catch (IOException e) {
             throw new ModuleCloudException(e);
         }
     }
 
-    public ModuleData getModuleData(int moduleID) {
+    public CloudModuleData getModuleData(String moduleID) {
         return cloudContent.get(moduleID);
+    }
+
+    private boolean hasUpdate(LocalModule localModule) throws ParseException {
+        CloudModuleData cloudModule = cloudContent.get(localModule.getModuleId());
+        if (cloudModule == null) {
+            // might be local module
+            return false;
+        }
+        SemanticVersion localVersion = new SemanticVersion(localModule.getVersionData().getVersion());
+        SemanticVersion newestCloudVersion = new SemanticVersion(cloudModule.getLatestVersion());
+        return newestCloudVersion.isUpdateFor(localVersion);
     }
 }

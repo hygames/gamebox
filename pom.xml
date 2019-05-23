@@ -24,7 +24,7 @@
 
     <groupId>co.hygames</groupId>
     <artifactId>gamebox</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.1</version>
     <name>GameBox</name>
     <description>Hub for a variety of games</description>
     <url>http://gamebox.hygames.co</url>
