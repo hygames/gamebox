@@ -19,7 +19,7 @@
 package co.hygames.gamebox.cloud;
 
 import co.hygames.gamebox.cloud.data.DependencyData;
-import co.hygames.gamebox.cloud.data.ModuleData;
+import co.hygames.gamebox.cloud.data.CloudModuleData;
 import co.hygames.gamebox.cloud.data.VersionData;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TestCloudModuleFromJson {
     private static File testCloudModuleFile;
-    private static ModuleData testCloudModule;
+    private static CloudModuleData testCloudModule;
 
     @BeforeAll
     public static void prepare() {
@@ -72,9 +72,9 @@ public class TestCloudModuleFromJson {
                         )
                 )
         );
-        testCloudModule = new ModuleData()
+        testCloudModule = new CloudModuleData()
                 .withId("test-module")
-                .withAuthor("Nikl")
+                .withAuthors(Arrays.asList("Nikl"))
                 .withName("Test module")
                 .withDescription("This module is only for test purposes")
                 .withVersions(versions)
@@ -85,10 +85,10 @@ public class TestCloudModuleFromJson {
     @DisplayName("Comparing parsed and manually loaded Module")
     public void parseTestCloudModule() throws FileNotFoundException {
         Gson gson = new Gson();
-        ModuleData fileModule = gson.fromJson(new FileReader(testCloudModuleFile), ModuleData.class);
+        CloudModuleData fileModule = gson.fromJson(new FileReader(testCloudModuleFile), CloudModuleData.class);
         assertAll(
                 () -> assertEquals(fileModule.getId(), testCloudModule.getId(),"Not the same id"),
-                () -> assertEquals(fileModule.getAuthor(), testCloudModule.getAuthor(),"Not the same author"),
+                () -> assertArrayEquals(fileModule.getAuthors().toArray(), testCloudModule.getAuthors().toArray(),"Not the same authors"),
                 () -> assertEquals(fileModule.getName(), testCloudModule.getName(),"Not the same name"),
                 () -> assertEquals(fileModule.getDescription(), testCloudModule.getDescription(),"Not the same description"),
                 () -> assertEquals(fileModule.getVersions().size(), testCloudModule.getVersions().size(),"Not the same number of versions")

@@ -1,6 +1,8 @@
 {
   "id": "test-module",
-  "author": "Nikl",
+  "authors": [
+    "Nikl"
+  ],
   "name": "Test module",
   "description": "This module is only for test purposes",
   "sourceUrl": "https://github.com/hygames-team/api-hygames-co",

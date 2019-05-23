@@ -20,20 +20,22 @@ package co.hygames.gamebox.cloud.data;
 
 import java.io.Serializable;
 import java.util.List;
+
+import co.hygames.gamebox.module.data.ModuleData;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * @author Niklas Eicker
  */
-public class ModuleData implements Serializable {
+public class CloudModuleData implements ModuleData, Serializable {
     @SerializedName("id")
     @Expose
     private String id;
 
-    @SerializedName("author")
+    @SerializedName("authors")
     @Expose
-    private String author;
+    private List<String> authors;
 
     @SerializedName("name")
     @Expose
@@ -61,12 +63,12 @@ public class ModuleData implements Serializable {
 
     private final static long serialVersionUID = 4719087577866667965L;
 
-    public ModuleData() {
+    public CloudModuleData() {
     }
 
-    public ModuleData(String id, String author, String name, String description, List<VersionData> versions) {
+    public CloudModuleData(String id, List<String> authors, String name, String description, List<VersionData> versions) {
         this.id = id;
-        this.author = author;
+        this.authors = authors;
         this.name = name;
         this.description = description;
         this.versions = versions;
@@ -80,21 +82,21 @@ public class ModuleData implements Serializable {
         this.id = id;
     }
 
-    public ModuleData withId(String id) {
+    public CloudModuleData withId(String id) {
         this.id = id;
         return this;
     }
 
-    public String getAuthor() {
-        return author;
+    public List<String> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthors(List<String> authors) {
+        this.authors = authors;
     }
 
-    public ModuleData withAuthor(String author) {
-        this.author = author;
+    public CloudModuleData withAuthors(List<String> authors) {
+        this.authors = authors;
         return this;
     }
 
@@ -106,7 +108,7 @@ public class ModuleData implements Serializable {
         this.name = name;
     }
 
-    public ModuleData withName(String name) {
+    public CloudModuleData withName(String name) {
         this.name = name;
         return this;
     }
@@ -119,7 +121,7 @@ public class ModuleData implements Serializable {
         this.description = description;
     }
 
-    public ModuleData withDescription(String description) {
+    public CloudModuleData withDescription(String description) {
         this.description = description;
         return this;
     }
@@ -132,7 +134,7 @@ public class ModuleData implements Serializable {
         this.sourceUrl = sourceUrl;
     }
 
-    public ModuleData withSourceUrl(String sourceUrl) {
+    public CloudModuleData withSourceUrl(String sourceUrl) {
         this.sourceUrl = sourceUrl;
         return this;
     }
@@ -145,7 +147,7 @@ public class ModuleData implements Serializable {
         this.latestVersion = latestVersion;
     }
 
-    public ModuleData withLatestVersion(String latestVersion) {
+    public CloudModuleData withLatestVersion(String latestVersion) {
         this.latestVersion = latestVersion;
         return this;
     }
@@ -158,7 +160,7 @@ public class ModuleData implements Serializable {
         this.lastUpdateAt = lastUpdateAt;
     }
 
-    public ModuleData withLastUpdateAt(Long lastUpdateAt) {
+    public CloudModuleData withLastUpdateAt(Long lastUpdateAt) {
         this.lastUpdateAt = lastUpdateAt;
         return this;
     }
@@ -171,7 +173,7 @@ public class ModuleData implements Serializable {
         this.versions = versions;
     }
 
-    public ModuleData withVersions(List<VersionData> versions) {
+    public CloudModuleData withVersions(List<VersionData> versions) {
         this.versions = versions;
         return this;
     }
