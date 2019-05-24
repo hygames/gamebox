@@ -20,6 +20,7 @@ package co.hygames.gamebox.utilities;
 
 import co.hygames.gamebox.GameBox;
 
+import javax.print.DocFlavor;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -155,6 +156,16 @@ public class FileUtility {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public static List<Class<?>> getClassesFromJar(File jar, Class<?> clazz) {
+        URL url = null;
+        try {
+            url = jar.toURI().toURL();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return gather(url, null, clazz);
     }
 
     private static void streamToFile(InputStream initialStream, File targetFile) throws IOException {

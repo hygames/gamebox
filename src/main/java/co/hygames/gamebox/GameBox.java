@@ -27,12 +27,13 @@ import java.util.logging.Logger;
  * @author Niklas Eicker
  */
 public class GameBox {
-    public static final String ID = "gamebox";
+    public static final String mouleId = "gamebox";
     private static GameBox instance;
     private ModulesManager modulesManager;
 
     public void onEnable() {
         instance = this;
+        this.modulesManager = new ModulesManager(this);
         // ToDo: load local modules and update info about cloud modules
     }
 

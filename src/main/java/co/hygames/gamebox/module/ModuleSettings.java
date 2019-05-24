@@ -18,7 +18,7 @@
 
 package co.hygames.gamebox.module;
 
-import co.hygames.gamebox.cloud.data.VersionData;
+import co.hygames.gamebox.module.data.VersionData;
 
 public class ModuleSettings {
     private String id;

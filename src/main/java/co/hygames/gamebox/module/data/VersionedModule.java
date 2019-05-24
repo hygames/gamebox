@@ -18,8 +18,6 @@
 
 package co.hygames.gamebox.module.data;
 
-import co.hygames.gamebox.cloud.data.VersionData;
-
 public interface VersionedModule {
 
     String getModuleId();

@@ -18,7 +18,6 @@
 
 package co.hygames.gamebox.module.data;
 
-import co.hygames.gamebox.cloud.data.DependencyData;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 

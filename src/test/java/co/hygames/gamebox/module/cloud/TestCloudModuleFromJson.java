@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.cloud;
+package co.hygames.gamebox.module.cloud;
 
-import co.hygames.gamebox.cloud.data.DependencyData;
-import co.hygames.gamebox.cloud.data.CloudModuleData;
-import co.hygames.gamebox.cloud.data.VersionData;
+import co.hygames.gamebox.module.data.DependencyData;
+import co.hygames.gamebox.module.data.CloudModuleData;
+import co.hygames.gamebox.module.data.VersionData;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

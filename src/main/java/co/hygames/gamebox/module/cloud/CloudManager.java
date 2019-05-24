@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.cloud;
+package co.hygames.gamebox.module.cloud;
 
 import co.hygames.gamebox.GameBox;
-import co.hygames.gamebox.cloud.data.CloudModuleData;
+import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.ModuleCloudException;
-import co.hygames.gamebox.module.LocalModule;
+import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
 
@@ -73,7 +73,7 @@ public class CloudManager {
         return cloudContent.get(moduleID);
     }
 
-    private boolean hasUpdate(LocalModule localModule) throws ParseException {
+    public boolean hasUpdate(LocalModule localModule) throws ParseException {
         CloudModuleData cloudModule = cloudContent.get(localModule.getModuleId());
         if (cloudModule == null) {
             // might be local module
