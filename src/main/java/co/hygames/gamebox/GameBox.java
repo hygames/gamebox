@@ -27,13 +27,22 @@ import java.util.logging.Logger;
  * @author Niklas Eicker
  */
 public class GameBox {
-    public static final String mouleId = "gamebox";
+    public static final String moduleId = "gamebox";
     private static GameBox instance;
     private ModulesManager modulesManager;
+    private File dataFolder;
+    private Logger logger;
+
+    public static void main(String args[]) {
+        new GameBox().onEnable();
+    }
 
     public void onEnable() {
         instance = this;
+        logger = Logger.getGlobal();
+        dataFolder = new File("/home/nikl/Desktop/gamebox"); // testing
         this.modulesManager = new ModulesManager(this);
+        modulesManager.installModule("test-module");
         // ToDo: load local modules and update info about cloud modules
     }
 
@@ -43,12 +52,12 @@ public class GameBox {
 
     public File getDataFolder() {
         // ToDo
-        return null;
+        return dataFolder;
     }
 
     public Logger getLogger() {
         // ToDo: logger from Hytale?
-        return null;
+        return logger;
     }
 
     public static void debug(String message) {

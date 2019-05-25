@@ -19,15 +19,19 @@
 package co.hygames.gamebox.module.cloud;
 
 import co.hygames.gamebox.GameBox;
-import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.ModuleCloudException;
+import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -37,12 +41,13 @@ import java.util.Map;
  * @author Niklas Eicker
  */
 public class CloudManager {
-    private static final String API_BASE_URL = "https://api.hygames.co/gamebox/";
+    //private static final String API_BASE_URL = "https://api.hygames.co/gamebox/";
+    private static final String API_BASE_URL = "http://127.0.0.1:4000/gamebox/";
     private static final Gson GSON = new Gson();
 
     private GameBox gameBox;
     private Map<String, CloudModuleData> cloudContent = new HashMap<>();
-    private Map<String, Callback<LocalModule>> downlodingModules = new HashMap<>();
+    private Map<String, Thread> downloadingModules = new HashMap<>();
 
     public CloudManager(GameBox gameBox) {
         this.gameBox = gameBox;
@@ -53,7 +58,8 @@ public class CloudManager {
         try {
             CloudModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), CloudModuleData[].class);
             for (CloudModuleData moduleData : modulesData) {
-                cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
+                cloudContent.put(moduleData.getId(), moduleData);
+                gameBox.getLogger().info("got moduledata for id:'" + moduleData.getId() + "'");
             }
         } catch (IOException e) {
             throw new ModuleCloudException(e);
@@ -82,5 +88,40 @@ public class CloudManager {
         SemanticVersion localVersion = new SemanticVersion(localModule.getVersionData().getVersion());
         SemanticVersion newestCloudVersion = new SemanticVersion(cloudModule.getLatestVersion());
         return newestCloudVersion.isUpdateFor(localVersion);
+    }
+
+    public void downloadModule(LocalModule localModule, Callback<LocalModule> callback) {
+        final String fileName = localModule.getModuleId() + "@" + localModule.getVersion().toString() + ".jar";
+        try {
+            final URL fileUrl = new URL(API_BASE_URL + "assets/modules/" + fileName);
+            final File moduleFolder = new File(gameBox.getModulesManager().getModulesDir(), localModule.getModuleId());
+            if (!moduleFolder.isDirectory()) moduleFolder.mkdirs();
+            final File outputFile = new File(moduleFolder, fileName);
+
+            // download
+            downloadingModules.put(fileName, new Thread(() -> {
+                try (BufferedInputStream in = new BufferedInputStream(fileUrl.openStream());
+                     FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
+                    byte dataBuffer[] = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+                        fileOutputStream.write(dataBuffer, 0, bytesRead);
+                    }
+                    localModule.setModuleJar(outputFile);
+                    callback.success(localModule);
+                } catch (IOException exception) {
+                    callback.fail(localModule, exception);
+                } finally {
+                    downloadingModules.remove(fileName);
+                }
+            }));
+            downloadingModules.get(fileName).start();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean isDownloading() {
+        return !downloadingModules.isEmpty();
     }
 }

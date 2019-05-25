@@ -36,7 +36,7 @@ public enum Permission {
     private boolean perGame = false;
 
     Permission(String perm) {
-        this.perm = GameBox.mouleId + "." + perm;
+        this.perm = GameBox.moduleId + "." + perm;
     }
 
     Permission(String perm, boolean perGame) {

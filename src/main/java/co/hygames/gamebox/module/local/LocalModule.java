@@ -18,19 +18,18 @@
 
 package co.hygames.gamebox.module.local;
 
-import co.hygames.gamebox.module.data.CloudModuleData;
-import co.hygames.gamebox.module.data.VersionData;
+import co.hygames.gamebox.module.data.*;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
-import co.hygames.gamebox.module.data.LocalModuleData;
-import co.hygames.gamebox.module.data.VersionedModule;
 import co.hygames.gamebox.utilities.ModuleUtility;
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.util.List;
 import java.util.jar.JarFile;
 
@@ -45,6 +44,7 @@ public class LocalModule implements VersionedModule {
     private String description;
     private List<String> authors;
     private VersionData versionData;
+    private SemanticVersion version;
     private File moduleJar;
 
     private LocalModule(String id, VersionData version) {
@@ -52,19 +52,16 @@ public class LocalModule implements VersionedModule {
         this.versionData = version;
     }
 
-    private static LocalModule fromLocalModuleData(LocalModuleData moduleData) {
+    public static LocalModule fromLocalModuleData(LocalModuleData moduleData) {
         LocalModule instance = new LocalModule(moduleData.getId(), new VersionData().withVersion(moduleData.getVersion()).withDependencies(moduleData.getDependencies()));
-        instance.setName(moduleData.getName());
-        instance.setAuthors(moduleData.getAuthors());
-        instance.setDescription(moduleData.getDescription());
-        return instance;
+        return instance.fillInfo(moduleData);
     }
 
-    private static LocalModule fromCloudModuleData(CloudModuleData moduleData) throws ModuleVersionException {
+    public static LocalModule fromCloudModuleData(CloudModuleData moduleData) throws ModuleVersionException {
         return fromCloudModuleData(moduleData, moduleData.getLatestVersion());
     }
 
-    private static LocalModule fromCloudModuleData(CloudModuleData moduleData, String version) throws ModuleVersionException {
+    public static LocalModule fromCloudModuleData(CloudModuleData moduleData, String version) throws ModuleVersionException {
         VersionData matchingVersion = null;
         for (VersionData versionData : moduleData.getVersions()) {
             if (versionData.getVersion().equals(version)) {
@@ -76,10 +73,19 @@ public class LocalModule implements VersionedModule {
             throw new ModuleVersionException("Version '" + version + "' cannot be found");
         }
         LocalModule instance =  new LocalModule(moduleData.getId(), matchingVersion);
-        instance.setName(moduleData.getName());
-        instance.setAuthors(moduleData.getAuthors());
-        instance.setDescription(moduleData.getDescription());
-        return instance;
+        return instance.fillInfo(moduleData);
+    }
+
+    private LocalModule fillInfo(ModuleData moduleData) {
+        this.setName(moduleData.getName());
+        this.setAuthors(moduleData.getAuthors());
+        this.setDescription(moduleData.getDescription());
+        try {
+            this.setVersion(new SemanticVersion(this.getVersionData().getVersion()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 
     public static LocalModule fromFile(File file) throws InvalidModuleException {
@@ -144,5 +150,13 @@ public class LocalModule implements VersionedModule {
 
     public void setAuthors(List<String> authors) {
         this.authors = authors;
+    }
+
+    public SemanticVersion getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(SemanticVersion version) {
+        this.version = version;
     }
 }

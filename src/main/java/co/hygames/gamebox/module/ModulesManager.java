@@ -19,7 +19,9 @@
 package co.hygames.gamebox.module;
 
 import co.hygames.gamebox.GameBox;
+import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
+import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.cloud.CloudManager;
 import co.hygames.gamebox.exceptions.module.ModuleCloudException;
 import co.hygames.gamebox.module.local.LocalModule;
@@ -117,5 +119,45 @@ public class ModulesManager {
 
     public File getModulesDir() {
         return this.modulesDir;
+    }
+
+    public void installModule(String moduleId) {
+        LocalModule localModule = null;
+        try {
+            localModule = LocalModule.fromCloudModuleData(cloudManager.getModuleData(moduleId));
+            gameBox.getLogger().info("LocalModule " + moduleId);
+            gameBox.getLogger().info("    Name: " + localModule.getName());
+            gameBox.getLogger().info("    Authors: " + String.join(", ", localModule.getAuthors()));
+            gameBox.getLogger().info("    Description: " + localModule.getDescription());
+            gameBox.getLogger().info("    Version: " + localModule.getVersion().toString());
+        } catch (ModuleVersionException e) {
+            e.printStackTrace();
+        }
+        installModule(localModule);
+    }
+
+    public void installModule(String moduleId, String version) {
+        try {
+            LocalModule localModule = LocalModule.fromCloudModuleData(cloudManager.getModuleData(moduleId), version);
+            installModule(localModule);
+        } catch (ModuleVersionException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void installModule(LocalModule localModule) {
+        cloudManager.downloadModule(localModule, new Callback<LocalModule>() {
+            @Override
+            public void success(LocalModule result) {
+                gameBox.getLogger().info("Download complete");
+            }
+
+            @Override
+            public void fail(LocalModule defaultResult, Exception exception) {
+                gameBox.getLogger().severe("Error while downloading module '" + defaultResult.getName() + "' version " + defaultResult.getVersion().toString());
+                if (exception != null) exception.printStackTrace();
+            }
+        });
+        gameBox.getLogger().info("Started download...");
     }
 }
