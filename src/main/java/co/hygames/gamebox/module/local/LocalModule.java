@@ -159,4 +159,8 @@ public class LocalModule implements VersionedModule {
     public void setVersion(SemanticVersion version) {
         this.version = version;
     }
+
+    public boolean sameIdAndVersion(LocalModule localModule) {
+        return this.moduleId.equals(localModule.getModuleId()) && this.getVersion().equals(localModule.getVersion());
+    }
 }

@@ -21,6 +21,9 @@ package co.hygames.gamebox;
 import co.hygames.gamebox.module.ModulesManager;
 
 import java.io.File;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -39,11 +42,24 @@ public class GameBox {
 
     public void onEnable() {
         instance = this;
-        logger = Logger.getGlobal();
-        dataFolder = new File("/home/nikl/Desktop/gamebox"); // testing
+        setUp();
+    }
+
+    private void setUp() {
+        createLogger();
+        dataFolder = new File("/home/nikl/Desktop/gamebox"); // testing ToDo: remove
         this.modulesManager = new ModulesManager(this);
         modulesManager.installModule("test-module");
         // ToDo: load local modules and update info about cloud modules
+    }
+
+    private void createLogger() {
+        logger = Logger.getLogger("GameBox");
+        Handler systemOut = new ConsoleHandler();
+        systemOut.setLevel( Level.ALL );
+        logger.setUseParentHandlers(false);
+        logger.addHandler( systemOut );
+        logger.setLevel(Level.FINEST); // Debugging... ToDo: remove
     }
 
     public static GameBox getInstance() {

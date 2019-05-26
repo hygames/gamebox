@@ -23,7 +23,7 @@ import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.cloud.CloudManager;
-import co.hygames.gamebox.exceptions.module.ModuleCloudException;
+import co.hygames.gamebox.exceptions.module.CloudException;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.FileUtility;
 
@@ -46,35 +46,22 @@ public class ModulesManager {
     public ModulesManager(GameBox gameBox) {
         this.gameBox = gameBox;
         connectToCloud();
-        loadFiles();
+        prepareFiles();
         collectLocalModules();
         collectLocalModuleUpdates();
-    }
-
-    private void collectLocalModuleUpdates() {
-        hasUpdateAvailable.clear();
-        for (String moduleId : localModules.keySet()) {
-            try {
-                if (cloudManager.hasUpdate(localModules.get(moduleId))) {
-                    hasUpdateAvailable.add(moduleId);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void connectToCloud() {
         this.cloudManager = new CloudManager(gameBox);
         try {
             cloudManager.updateCloudContent();
-        } catch (ModuleCloudException e) {
+        } catch (CloudException e) {
             gameBox.getLogger().severe("Error while attempting to load cloud content");
             e.printStackTrace();
         }
     }
 
-    private void loadFiles() {
+    private void prepareFiles() {
         modulesDir = new File(gameBox.getDataFolder(), "modules");
         final boolean newModulesDir = modulesDir.mkdirs();
         if (newModulesDir) {
@@ -86,7 +73,6 @@ public class ModulesManager {
             try {
                 modulesSettings.createNewFile();
                 gameBox.getLogger().info("Created a new module settings file");
-                registerAllModules();
             } catch (IOException e) {
                 gameBox.getLogger().warning("Error while attempting to create a new module settings file:");
                 e.printStackTrace();
@@ -95,7 +81,19 @@ public class ModulesManager {
     }
 
     private void collectLocalModules() {
-        List<File> jars = FileUtility.getAllJars(modulesDir);
+        List<File> jars = new ArrayList<>();
+        for (File moduleFolder : modulesDir.listFiles()) {
+            if (!moduleFolder.isDirectory()) continue;
+            List<File> moduleJars = FileUtility.getAllJars(moduleFolder);
+            if (moduleJars.size() > 1) {
+                gameBox.getLogger().warning("There seems to be more then one jar in " + moduleFolder.getName());
+                gameBox.getLogger().warning("    Attempting to load " + moduleJars.get(0).getName());
+                gameBox.getLogger().warning("    Please remove any jars you do not need");
+                jars.add(moduleJars.get(0));
+                continue;
+            }
+            jars.addAll(moduleJars);
+        }
         for (File jar : jars) {
             try {
                 LocalModule localModule = LocalModule.fromFile(jar);
@@ -111,7 +109,20 @@ public class ModulesManager {
         }
     }
 
-    private void registerAllModules() {
+    private void collectLocalModuleUpdates() {
+        hasUpdateAvailable.clear();
+        for (String moduleId : localModules.keySet()) {
+            try {
+                if (cloudManager.hasUpdate(localModules.get(moduleId))) {
+                    hasUpdateAvailable.add(moduleId);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void registerAllLocalModules() {
         List<File> jars = FileUtility.getAllJars(modulesDir);
 
         // ToDo: read version, dependencies into module settings and save defaults in module settings file
@@ -122,25 +133,26 @@ public class ModulesManager {
     }
 
     public void installModule(String moduleId) {
-        LocalModule localModule = null;
+        gameBox.getLogger().fine("Install module '" + moduleId +"'...");
         try {
-            localModule = LocalModule.fromCloudModuleData(cloudManager.getModuleData(moduleId));
-            gameBox.getLogger().info("LocalModule " + moduleId);
-            gameBox.getLogger().info("    Name: " + localModule.getName());
-            gameBox.getLogger().info("    Authors: " + String.join(", ", localModule.getAuthors()));
-            gameBox.getLogger().info("    Description: " + localModule.getDescription());
-            gameBox.getLogger().info("    Version: " + localModule.getVersion().toString());
-        } catch (ModuleVersionException e) {
+            LocalModule localModule = LocalModule.fromCloudModuleData(cloudManager.getModuleData(moduleId));
+            if (localModules.containsKey(moduleId) && localModules.get(moduleId).sameIdAndVersion(localModule)) {
+                // module already installed!
+                gameBox.getLogger().fine("Attempted to install already installed module '" + localModule.getModuleId() +"' @" + localModule.getVersion().toString());
+                return;
+            }
+            installModule(localModule);
+        } catch (ModuleVersionException | CloudException e) {
             e.printStackTrace();
+            return;
         }
-        installModule(localModule);
     }
 
     public void installModule(String moduleId, String version) {
         try {
             LocalModule localModule = LocalModule.fromCloudModuleData(cloudManager.getModuleData(moduleId), version);
             installModule(localModule);
-        } catch (ModuleVersionException e) {
+        } catch (ModuleVersionException | CloudException e) {
             e.printStackTrace();
         }
     }
@@ -158,6 +170,5 @@ public class ModulesManager {
                 if (exception != null) exception.printStackTrace();
             }
         });
-        gameBox.getLogger().info("Started download...");
     }
 }

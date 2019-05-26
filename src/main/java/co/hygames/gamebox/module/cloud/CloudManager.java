@@ -20,7 +20,7 @@ package co.hygames.gamebox.module.cloud;
 
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.database.Callback;
-import co.hygames.gamebox.exceptions.module.ModuleCloudException;
+import co.hygames.gamebox.exceptions.module.CloudException;
 import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
@@ -53,7 +53,7 @@ public class CloudManager {
         this.gameBox = gameBox;
     }
 
-    public void updateCloudContent() throws ModuleCloudException {
+    public void updateCloudContent() throws CloudException {
         cloudContent.clear();
         try {
             CloudModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), CloudModuleData[].class);
@@ -62,20 +62,21 @@ public class CloudManager {
                 gameBox.getLogger().info("got moduledata for id:'" + moduleData.getId() + "'");
             }
         } catch (IOException e) {
-            throw new ModuleCloudException(e);
+            throw new CloudException(e);
         }
     }
 
-    public void updateCloudModule(String moduleId) throws ModuleCloudException {
+    public void updateCloudModule(String moduleId) throws CloudException {
         try {
             CloudModuleData moduleData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules/" + moduleId).openStream()), CloudModuleData.class);
             cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
         } catch (IOException e) {
-            throw new ModuleCloudException(e);
+            throw new CloudException(e);
         }
     }
 
-    public CloudModuleData getModuleData(String moduleID) {
+    public CloudModuleData getModuleData(String moduleID) throws CloudException {
+        if (!cloudContent.containsKey(moduleID)) throw new CloudException("No module with the id '" + moduleID + "' was found on the cloud");
         return cloudContent.get(moduleID);
     }
 
