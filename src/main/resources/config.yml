@@ -1,0 +1,15 @@
+# This is the main configuration file of GameBox
+# For documentation beyond the inline comments, see https://www.hygames.co/gamebox/settings/config-file
+
+# Settings concerning the module cloud
+moduleCloud:
+  # set this to false to completely disable the cloud
+  enabled: true
+  # Weather or not to automatically check for updates
+  # default value for all modules
+  #    this setting can be overwritten for selected modules in 'modules.yml'
+  defaultCheckForUpdates: true
+
+# The language file to load messages from
+languageFile: default
+

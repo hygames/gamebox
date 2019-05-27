@@ -21,6 +21,7 @@ package co.hygames.gamebox.module.cloud;
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.CloudException;
+import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
@@ -41,8 +42,8 @@ import java.util.Map;
  * @author Niklas Eicker
  */
 public class CloudManager {
-    //private static final String API_BASE_URL = "https://api.hygames.co/gamebox/";
-    private static final String API_BASE_URL = "http://127.0.0.1:4000/gamebox/";
+    private static final String API_BASE_URL = "https://api.hygames.co/gamebox/";
+    //private static final String API_BASE_URL = "http://127.0.0.1:4000/gamebox/";
     private static final Gson GSON = new Gson();
 
     private GameBox gameBox;
@@ -94,10 +95,19 @@ public class CloudManager {
     public void downloadModule(LocalModule localModule, Callback<LocalModule> callback) {
         final String fileName = localModule.getModuleId() + "@" + localModule.getVersion().toString() + ".jar";
         try {
+            final File outputFile = new File(gameBox.getModulesManager().getModulesDir(), fileName);
+            if (outputFile.isFile()) {
+                gameBox.getLogger().info("Module " + localModule.getName() + " @" + localModule.getVersion().toString() + " already exists...");
+                gameBox.getLogger().info("   skipping download of '" + fileName + "'");
+                try {
+                    localModule.setModuleJar(outputFile);
+                    callback.success(localModule);
+                } catch (InvalidModuleException e) {
+                    callback.fail(localModule, e);
+                }
+                return;
+            }
             final URL fileUrl = new URL(API_BASE_URL + "assets/modules/" + fileName);
-            final File moduleFolder = new File(gameBox.getModulesManager().getModulesDir(), localModule.getModuleId());
-            if (!moduleFolder.isDirectory()) moduleFolder.mkdirs();
-            final File outputFile = new File(moduleFolder, fileName);
 
             // download
             downloadingModules.put(fileName, new Thread(() -> {
@@ -110,7 +120,7 @@ public class CloudManager {
                     }
                     localModule.setModuleJar(outputFile);
                     callback.success(localModule);
-                } catch (IOException exception) {
+                } catch (IOException | InvalidModuleException exception) {
                     callback.fail(localModule, exception);
                 } finally {
                     downloadingModules.remove(fileName);

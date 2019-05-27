@@ -18,9 +18,11 @@
 
 package co.hygames.gamebox.module.local;
 
+import co.hygames.gamebox.module.GameBoxModule;
 import co.hygames.gamebox.module.data.*;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
+import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.ModuleUtility;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
@@ -124,7 +126,10 @@ public class LocalModule implements VersionedModule {
         return moduleJar;
     }
 
-    public void setModuleJar(File moduleJar) {
+    public void setModuleJar(File moduleJar) throws InvalidModuleException {
+        List<Class<?>> clazzes = FileUtility.getClassesFromJar(moduleJar, GameBoxModule.class);
+        if (clazzes.size() < 1) throw new InvalidModuleException("No class extending GameBoxModule was found in '" + getName() + "'");
+        if (clazzes.size() > 1) throw new InvalidModuleException("More then one class extending GameBoxModule was found in '" + getName() + "'");
         this.moduleJar = moduleJar;
     }
 

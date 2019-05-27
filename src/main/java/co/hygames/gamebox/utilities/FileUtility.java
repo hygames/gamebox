@@ -20,18 +20,13 @@ package co.hygames.gamebox.utilities;
 
 import co.hygames.gamebox.GameBox;
 
-import javax.print.DocFlavor;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -168,7 +163,7 @@ public class FileUtility {
         return gather(url, null, clazz);
     }
 
-    private static void streamToFile(InputStream initialStream, File targetFile) throws IOException {
+    public static void streamToFile(InputStream initialStream, File targetFile) throws IOException {
         byte[] buffer = new byte[initialStream.available()];
         initialStream.read(buffer);
         OutputStream outStream = new FileOutputStream(targetFile);
@@ -186,5 +181,17 @@ public class FileUtility {
         }
         FilenameFilter fileNameFilter = (dir, name) -> name.endsWith(".jar");
         return Arrays.asList(folder.listFiles(fileNameFilter));
+    }
+
+    public static InputStream getResource(String filename) throws IOException {
+        if (filename == null || filename.isEmpty()) throw new IllegalArgumentException("Filename cannot be null or empty");
+        URL url = GameBox.class.getClassLoader().getResource(filename);
+        if (url == null) throw new IOException("Resource '" + filename + "' not found");
+        URLConnection connection = url.openConnection();
+        return connection.getInputStream();
+    }
+
+    public static void copyResource(String resourceName, File targetFile) throws IOException {
+        streamToFile(getResource(resourceName), targetFile);
     }
 }

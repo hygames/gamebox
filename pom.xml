@@ -133,6 +133,11 @@
             <id>hikari-repo</id>
             <url>https://mvnrepository.com/artifact/com.zaxxer/HikariCP</url>
         </repository>
+        <repository>
+            <id>Sonatype-public</id>
+            <name>SnakeYAML repository</name>
+            <url>http://oss.sonatype.org/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -145,6 +150,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.24</version>
         </dependency>
         <!-- Test -->
         <dependency>

@@ -25,10 +25,13 @@ import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.cloud.CloudManager;
 import co.hygames.gamebox.exceptions.module.CloudException;
 import co.hygames.gamebox.module.local.LocalModule;
+import co.hygames.gamebox.module.settings.ModulesSettings;
 import co.hygames.gamebox.utilities.FileUtility;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 
@@ -39,7 +42,8 @@ public class ModulesManager {
     private GameBox gameBox;
     private CloudManager cloudManager;
     private File modulesDir;
-    private File modulesSettings;
+    private File modulesFile;
+    private ModulesSettings modulesSettings;
     private Map<String, LocalModule> localModules = new HashMap<>();
     private Set<String> hasUpdateAvailable = new HashSet<>();
 
@@ -47,8 +51,24 @@ public class ModulesManager {
         this.gameBox = gameBox;
         connectToCloud();
         prepareFiles();
+        loadModuleSettings();
         collectLocalModules();
         collectLocalModuleUpdates();
+    }
+
+    private void loadModuleSettings() {
+        //Yaml yaml = new Yaml(new Constructor(ModulesSettings.class));
+        Constructor constructor = new Constructor(ModulesSettings.class);
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        Yaml yaml = new Yaml(constructor, representer);
+        try {
+            this.modulesSettings = yaml.loadAs(new FileInputStream(modulesFile), ModulesSettings.class);
+            // prevent NPE for empty modules file
+            modulesSettings.setModules(modulesSettings.getModules() == null ? new HashMap<>() : modulesSettings.getModules());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void connectToCloud() {
@@ -63,16 +83,14 @@ public class ModulesManager {
 
     private void prepareFiles() {
         modulesDir = new File(gameBox.getDataFolder(), "modules");
-        final boolean newModulesDir = modulesDir.mkdirs();
-        if (newModulesDir) {
+        if (modulesDir.mkdirs()) {
             gameBox.getLogger().info("Created Modules Directory");
         }
-        modulesSettings = new File(modulesDir, "modules.yml");
-        final boolean needNewSettingsFile = !modulesSettings.isFile();
-        if (needNewSettingsFile) {
+        modulesFile = new File(modulesDir, "modules.yml");
+        if (!modulesFile.isFile()) {
             try {
-                modulesSettings.createNewFile();
-                gameBox.getLogger().info("Created a new module settings file");
+                FileUtility.copyResource("modules/modules.yml", modulesFile);
+                gameBox.getLogger().info("Copied default 'modules.yml' file");
             } catch (IOException e) {
                 gameBox.getLogger().warning("Error while attempting to create a new module settings file:");
                 e.printStackTrace();
@@ -81,25 +99,10 @@ public class ModulesManager {
     }
 
     private void collectLocalModules() {
-        List<File> jars = new ArrayList<>();
-        for (File moduleFolder : modulesDir.listFiles()) {
-            if (!moduleFolder.isDirectory()) continue;
-            List<File> moduleJars = FileUtility.getAllJars(moduleFolder);
-            if (moduleJars.size() > 1) {
-                gameBox.getLogger().warning("There seems to be more then one jar in " + moduleFolder.getName());
-                gameBox.getLogger().warning("    Attempting to load " + moduleJars.get(0).getName());
-                gameBox.getLogger().warning("    Please remove any jars you do not need");
-                jars.add(moduleJars.get(0));
-                continue;
-            }
-            jars.addAll(moduleJars);
-        }
+        List<File> jars = FileUtility.getAllJars(modulesDir);
         for (File jar : jars) {
             try {
                 LocalModule localModule = LocalModule.fromFile(jar);
-                List<Class<?>> clazzes = FileUtility.getClassesFromJar(jar, GameBoxModule.class);
-                if (clazzes.size() < 1) throw new InvalidModuleException("No class extending GameBoxModule was found in '" + localModule.getName() + "'");
-                if (clazzes.size() > 1) throw new InvalidModuleException("More then one class extending GameBoxModule was found in '" + localModule.getName() + "'");
                 localModules.put(localModule.getModuleId(), localModule);
             } catch (InvalidModuleException e) {
                 gameBox.getLogger().severe("Error while loading module from the jar '" + jar.getName() + "'");
