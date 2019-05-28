@@ -24,9 +24,11 @@ import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.cloud.CloudManager;
 import co.hygames.gamebox.exceptions.module.CloudException;
+import co.hygames.gamebox.module.data.DependencyData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.module.settings.ModulesSettings;
 import co.hygames.gamebox.utilities.FileUtility;
+import co.hygames.gamebox.utilities.versioning.VersionRangeUtility;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -45,6 +47,7 @@ public class ModulesManager {
     private File modulesFile;
     private ModulesSettings modulesSettings;
     private Map<String, LocalModule> localModules = new HashMap<>();
+    private Map<String, GameBoxModule> loadedModules = new HashMap<>();
     private Set<String> hasUpdateAvailable = new HashSet<>();
 
     public ModulesManager(GameBox gameBox) {
@@ -53,7 +56,67 @@ public class ModulesManager {
         prepareFiles();
         loadModuleSettings();
         collectLocalModules();
-        collectLocalModuleUpdates();
+        checkDependencies();
+        //collectLocalModuleUpdates();
+        loadLocalModules();
+    }
+
+    private void checkDependencies() {
+        boolean foundIssue = true;
+        int iteration = 0;
+        while (foundIssue && !localModules.isEmpty()) {
+            if (iteration > 100) {
+                gameBox.getLogger().severe("Way too many cycles needed to check dependencies of the modules...");
+                break;
+            }
+            foundIssue = false;
+            Iterator<LocalModule> modules = localModules.values().iterator();
+            while (modules.hasNext()) {
+                LocalModule currentModule = modules.next();
+                for (DependencyData dependencyData : currentModule.getVersionData().getDependencies()) {
+                    LocalModule dependency = localModules.get(dependencyData.getId());
+                    if (dependency == null) {
+                        gameBox.getLogger().warning("The dependency '" + dependencyData.getId()
+                                + "' is missing for the module '" + currentModule.getModuleId() + "'");
+                        gameBox.getLogger().warning("   " + currentModule.getModuleId() + " asks for a version in the range '"
+                                + dependencyData.getVersionRange() + "'" );
+                        foundIssue = true;
+                        modules.remove();
+                        break;
+                    }
+                    try {
+                        if (!VersionRangeUtility.isInVersionRange(dependency.getVersion(), dependencyData.getVersionRange())) {
+                            gameBox.getLogger().warning("'" + currentModule.getModuleId() + "' asks for '"
+                                    + dependency.getModuleId() + "' with a version in the range '"
+                                    + dependencyData.getVersionRange() + "'");
+                            gameBox.getLogger().warning("   The installed version is '" + dependency.getVersion().toString() + "'" );
+                            foundIssue = true;
+                            modules.remove();
+                            break;
+                        }
+                    } catch (ParseException e) {
+                        // can be ignored, since the version ranges are parsed before
+                    }
+                }
+            }
+            iteration++;
+        }
+        if (iteration > 1) {
+            // ToDo
+            // link to some docs about version ranges? Some general info?
+        }
+    }
+
+    private void loadLocalModules() {
+        // ToDo: sort via dependencies
+        for (LocalModule localModule : localModules.values()) {
+            gameBox.getLogger().info("Loading module '" + localModule.getName() + "'...");
+            if (loadedModules.containsKey(localModule.getModuleId())) {
+                gameBox.getLogger().info("    already loaded! Skipping...");
+                continue;
+            }
+            loadModule(localModule);
+        }
     }
 
     private void loadModuleSettings() {
@@ -164,7 +227,10 @@ public class ModulesManager {
         cloudManager.downloadModule(localModule, new Callback<LocalModule>() {
             @Override
             public void success(LocalModule result) {
-                gameBox.getLogger().info("Download complete");
+                gameBox.getLogger().info("Download complete. Loading the module...");
+                localModules.put(result.getModuleId(), result);
+                addModuleToSettings(result.getModuleId());
+                loadModule(result);
             }
 
             @Override
@@ -173,5 +239,56 @@ public class ModulesManager {
                 if (exception != null) exception.printStackTrace();
             }
         });
+    }
+
+    private void loadModule(LocalModule localModule) {
+        try {
+            gameBox.getLogger().info("    instantiating");
+            loadedModules.put(localModule.getModuleId(), (GameBoxModule) FileUtility.getClassesFromJar(localModule.getModuleJar(), GameBoxModule.class).get(0).newInstance());
+            gameBox.getLogger().info("    done.");
+        } catch (InstantiationException | IllegalAccessException e) {
+            gameBox.getLogger().warning("Failed to instantiate module '" + localModule.getName() + "' from the jar '" + localModule.getModuleJar().getName() + "'");
+            e.printStackTrace();
+        }
+    }
+
+    private void addModuleToSettings(String moduleId) {
+        Map<String, ModulesSettings.ModuleSettings> currentSettings = modulesSettings.getModules();
+        currentSettings.putIfAbsent(moduleId, new ModulesSettings.ModuleSettings());
+        modulesSettings.setModules(currentSettings);
+        dumpModuleSettings();
+    }
+
+    private void removeModuleFromSettings(String moduleId) {
+        Map<String, ModulesSettings.ModuleSettings> currentSettings = modulesSettings.getModules();
+        currentSettings.remove(moduleId);
+        modulesSettings.setModules(currentSettings);
+        dumpModuleSettings();
+    }
+
+    private void updateModuleSettings(String moduleId, ModulesSettings.ModuleSettings settings) {
+        Map<String, ModulesSettings.ModuleSettings> currentSettings = modulesSettings.getModules();
+        currentSettings.put(moduleId, settings);
+        modulesSettings.setModules(currentSettings);
+        dumpModuleSettings();
+    }
+
+    private void dumpModuleSettings() {
+        Constructor constructor = new Constructor(ModulesSettings.class);
+        Yaml yaml = new Yaml(constructor);
+        try {
+            yaml.dump(modulesSettings, new FileWriter(modulesFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Get the instance of a module by its ID
+     * @param moduleID the module to get
+     * @return module instance or null
+     */
+    public GameBoxModule getModuleInstance(String moduleID) {
+        return loadedModules.get(moduleID);
     }
 }
