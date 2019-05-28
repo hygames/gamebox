@@ -18,8 +18,6 @@
 
 package co.hygames.gamebox.utilities.versioning;
 
-import co.hygames.gamebox.GameBox;
-
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -102,6 +100,5 @@ public class VersionRangeUtility {
             default:
                 throw new IllegalArgumentException("Unknown version range operator: " + constrainOperator);
         }
-
     }
 }

@@ -20,6 +20,9 @@ package co.hygames.gamebox.exceptions.module;
 
 import co.hygames.gamebox.exceptions.GameBoxException;
 
+/**
+ * To be thrown, when a specified version of a module is not found
+ */
 public class ModuleVersionException extends GameBoxException {
     public ModuleVersionException(String message) {
         super(message);

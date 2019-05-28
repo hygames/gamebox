@@ -21,7 +21,10 @@ package co.hygames.gamebox.exceptions.module;
 import co.hygames.gamebox.exceptions.GameBoxException;
 
 /**
- * Exception for issues concerning the module cloud
+ * To be thrown, if a module is invalid
+ *
+ * For example, by not having a module.yml file,
+ * or no class extending {@link co.hygames.gamebox.module.GameBoxModule} is found.
  */
 public class InvalidModuleException extends GameBoxException {
     public InvalidModuleException() {

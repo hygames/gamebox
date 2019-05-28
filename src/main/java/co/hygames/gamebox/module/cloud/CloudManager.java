@@ -128,7 +128,7 @@ public class CloudManager {
             }));
             downloadingModules.get(fileName).start();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            callback.fail(localModule, e);
         }
     }
 
