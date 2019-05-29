@@ -79,16 +79,16 @@ public class ModulesManager {
                         gameBox.getLogger().warning("The dependency '" + dependencyData.getId()
                                 + "' is missing for the module '" + currentModule.getModuleId() + "'");
                         gameBox.getLogger().warning("   " + currentModule.getModuleId() + " asks for a version in the range '"
-                                + dependencyData.getVersionRange() + "'" );
+                                + dependencyData.getVersionConstrain() + "'" );
                         foundIssue = true;
                         modules.remove();
                         break;
                     }
                     try {
-                        if (!VersionRangeUtility.isInVersionRange(dependency.getVersion(), dependencyData.getVersionRange())) {
+                        if (!VersionRangeUtility.isInVersionRange(dependency.getVersion(), dependencyData.getVersionConstrain())) {
                             gameBox.getLogger().warning("'" + currentModule.getModuleId() + "' asks for '"
-                                    + dependency.getModuleId() + "' with a version in the range '"
-                                    + dependencyData.getVersionRange() + "'");
+                                    + dependency.getModuleId() + "' with the version constrain '"
+                                    + dependencyData.getVersionConstrain() + "'");
                             gameBox.getLogger().warning("   The installed version is '" + dependency.getVersion().toString() + "'" );
                             foundIssue = true;
                             modules.remove();

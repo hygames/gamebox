@@ -30,19 +30,19 @@ public class DependencyData implements Serializable {
     @Expose
     private String id;
 
-    @SerializedName("versionRange")
+    @SerializedName("versionConstrain")
     @Expose
-    private String versionRange;
+    private String versionConstrain;
 
     private final static long serialVersionUID = 3080774369300795773L;
 
     public DependencyData() {
     }
 
-    public DependencyData(String id, String versionRange) {
+    public DependencyData(String id, String versionConstrain) {
         super();
         this.id = id;
-        this.versionRange = versionRange;
+        this.versionConstrain = versionConstrain;
     }
 
     public String getId() {
@@ -58,16 +58,16 @@ public class DependencyData implements Serializable {
         return this;
     }
 
-    public String getVersionRange() {
-        return versionRange;
+    public String getVersionConstrain() {
+        return versionConstrain;
     }
 
-    public void setVersionRange(String versionRange) {
-        this.versionRange = versionRange;
+    public void setVersionConstrain(String versionConstrain) {
+        this.versionConstrain = versionConstrain;
     }
 
-    public DependencyData withVersionRange(String versionRange) {
-        this.versionRange = versionRange;
+    public DependencyData withVersionConstrain(String versionConstrain) {
+        this.versionConstrain = versionConstrain;
         return this;
     }
 }

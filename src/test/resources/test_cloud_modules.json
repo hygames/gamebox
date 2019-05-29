@@ -16,7 +16,7 @@
         "dependencies": [
           {
             "id": "gamebox",
-            "versionRange": "~> 1.0"
+            "versionConstrain": "~> 1.0"
           }
         ],
         "releaseNotes": [
@@ -31,7 +31,7 @@
         "dependencies": [
           {
             "id": "gamebox",
-            "versionRange": "~> 1.0"
+            "versionConstrain": "~> 1.0"
           }
         ],
         "releaseNotes": [
@@ -44,7 +44,7 @@
         "dependencies": [
           {
             "id": "gamebox",
-            "versionRange": "~> 1.0"
+            "versionConstrain": "~> 1.0"
           }
         ],
         "releaseNotes": [
@@ -70,7 +70,7 @@
         "dependencies": [
           {
             "id": "gamebox",
-            "versionRange": "~> 1.0"
+            "versionConstrain": "~> 1.0"
           }
         ],
         "releaseNotes": [
@@ -85,11 +85,11 @@
         "dependencies": [
           {
             "id": "gamebox",
-            "versionRange": "~> 1.0"
+            "versionConstrain": "~> 1.0"
           },
           {
             "id": "test-module",
-            "versionRange": "~> 1.1.0"
+            "versionConstrain": "~> 1.1.0"
           }
         ],
         "releaseNotes": [

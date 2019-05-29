@@ -50,7 +50,7 @@ public class TestCloudModuleFromJson {
     }
 
     private static void manuallyBuildTestModule() {
-        DependencyData dependency = new DependencyData().withId("gamebox").withVersionRange("~> 1.0");
+        DependencyData dependency = new DependencyData().withId("gamebox").withVersionConstrain("~> 1.0");
         List<DependencyData> dependencies = new ArrayList<>();
         dependencies.add(dependency);
         List<VersionData> versions = new ArrayList<>();
@@ -109,7 +109,7 @@ public class TestCloudModuleFromJson {
                 DependencyData dependency1 = itManualDependency.next();
                 DependencyData dependency2 = itFileDependency.next();
                 assertEquals(dependency1.getId(), dependency2.getId(),"Dependencies: Not the same id");
-                assertEquals(dependency1.getVersionRange(), dependency2.getVersionRange(),"Dependencies: Not the same version range");
+                assertEquals(dependency1.getVersionConstrain(), dependency2.getVersionConstrain(),"Dependencies: Not the same version constrain");
             }
         }
     }

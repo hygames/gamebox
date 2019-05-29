@@ -10,7 +10,7 @@
   "dependencies": [
     {
       "id": "gamebox",
-      "versionRange": "~> 1.0"
+      "versionConstrain": "~> 1.0"
     }
   ]
 }
