@@ -34,14 +34,14 @@ public class ModulesSettings {
 
     public static class ModuleSettings {
         public boolean enabled = true;
-        public boolean checkForUpdates = true;
+        public boolean autoUpdate = true;
 
         public boolean isEnabled() {
             return enabled;
         }
 
-        public boolean isCheckForUpdates() {
-            return checkForUpdates;
+        public boolean isAutoUpdate() {
+            return autoUpdate;
         }
     }
 }

@@ -5,7 +5,7 @@
 # Exemplary module entry (some of these parameters can be optional):
 # ------
 #  module-id:
-#    enabled: true                           If this is false the module will not be loaded
-#    checkForUpdates: true                   For cloud modules; On regular basis a check for updates will be made
+#    enabled: true                          If this is false the module will not be loaded
+#    autoUpdate: false                      If an update is found, it is automatically installed
 #
 modules:
