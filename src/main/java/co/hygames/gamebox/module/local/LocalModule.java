@@ -26,6 +26,9 @@ import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.ModuleUtility;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +43,13 @@ import java.util.jar.JarFile;
  */
 public class LocalModule implements VersionedModule {
     private static final Gson GSON = new Gson();
+    private static final Yaml YAML;
+    static {
+        Constructor constructor = new Constructor(LocalModuleData.class);
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        YAML = new Yaml(constructor, representer);
+    }
 
     private String moduleId;
     private String name;
@@ -95,12 +105,12 @@ public class LocalModule implements VersionedModule {
         LocalModule localModule = null;
         try {
             jarFile = new JarFile(file);
-            InputStream moduleJson = jarFile.getInputStream(jarFile
+            InputStream moduleFile = jarFile.getInputStream(jarFile
                     .stream()
-                    .filter(e -> e.getName().equals("module.json"))
+                    .filter(e -> e.getName().equals("module.yml"))
                     .findFirst()
-                    .orElseThrow(() -> new InvalidModuleException("No 'module.json' found for " + file.getName())));
-            LocalModuleData moduleData = GSON.fromJson(new InputStreamReader(moduleJson), LocalModuleData.class);
+                    .orElseThrow(() -> new InvalidModuleException("No 'module.yml' found for " + file.getName())));
+            LocalModuleData moduleData = YAML.loadAs(new InputStreamReader(moduleFile), LocalModuleData.class);
             ModuleUtility.validateLocalModuleData(moduleData);
             ModuleUtility.fillDefaults(moduleData);
             jarFile.close();

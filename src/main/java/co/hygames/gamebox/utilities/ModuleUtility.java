@@ -32,7 +32,7 @@ public class ModuleUtility {
         try {
             new SemanticVersion(localModuleData.getVersion());
         } catch (ParseException e) {
-            throw new InvalidModuleException("No valid version found", e);
+            throw new InvalidModuleException("No valid semantic version found", e);
         }
     }
 

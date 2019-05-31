@@ -18,40 +18,18 @@
 
 package co.hygames.gamebox.module.data;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LocalModuleData implements ModuleData, Serializable {
-    @SerializedName("id")
-    @Expose
     private String id;
-
-    @SerializedName("author")
-    @Expose
-    private List<String> authors;
-
-    @SerializedName("name")
-    @Expose
+    private List<String> authors = new ArrayList<>();
     private String name;
-
-    @SerializedName("description")
-    @Expose
     private String description;
-
-    @SerializedName("sourceUrl")
-    @Expose
     private String sourceUrl;
-
-    @SerializedName("version")
-    @Expose
     private String version;
-
-    @SerializedName("dependencies")
-    @Expose
-    private List<DependencyData> dependencies = null;
+    private List<DependencyData> dependencies = new ArrayList<>();
 
     private final static long serialVersionUID = 8241484990221433533L;
 

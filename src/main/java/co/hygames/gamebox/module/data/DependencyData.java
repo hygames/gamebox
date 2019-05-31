@@ -70,4 +70,12 @@ public class DependencyData implements Serializable {
         this.versionConstrain = versionConstrain;
         return this;
     }
+
+    @Override
+    public boolean equals(Object compareObj) {
+        if (compareObj == this) return true;
+        if (!(compareObj instanceof DependencyData)) return false;
+        DependencyData compare = (DependencyData) compareObj;
+        return this.id.equals(compare.id) && this.versionConstrain.equals(compare.versionConstrain);
+    }
 }
