@@ -59,7 +59,8 @@ public class TestLocalModuleFile {
                 .withDescription("This module is only for test purposes")
                 .withSourceUrl("https://github.com/hygames-team/gamebox-test-module")
                 .withVersion("1.0.0")
-                .withDependencies(Arrays.asList(new DependencyData().withId("gamebox").withVersionConstrain("~> 1.0")));
+                .withDependencies(Arrays.asList(new DependencyData().withId("gamebox").withVersionConstrain("~> 1.0")
+                        , new DependencyData().withId("softTest").withVersionConstrain("~> 1.0, > 1.2").withSoftDependency(true)));
     }
 
     @Test
