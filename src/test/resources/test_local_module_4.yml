@@ -8,3 +8,4 @@ dependencies:
     versionConstrain: "~> 1.0"
   - id: "soft-lib-test-module"
     versionConstrain: "~> 1.0, > 1.2"
+    softDependency: true

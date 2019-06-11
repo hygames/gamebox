@@ -7,5 +7,5 @@ version: "1.0.0"
 dependencies:
   - id: "gamebox"
     versionConstrain: "~> 1.0"
-  - id: "soft-lib-test-module"
+  - id: "lib-test-module"
     versionConstrain: "~> 1.0, > 1.2"

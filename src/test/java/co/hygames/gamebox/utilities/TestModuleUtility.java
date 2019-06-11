@@ -36,7 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestModuleUtility {
     private static Map<String, LocalModule> modules = new HashMap<>();
@@ -62,15 +62,30 @@ public class TestModuleUtility {
     }
 
     @Test
-    @DisplayName("Check dependent modules")
-    public void checkDependencies() {
+    @DisplayName("Check dependent modules - no missing dependencies")
+    public void checkDependencies() throws ModuleDependencyException {
         Map<String, LocalModule> modules = new HashMap<>(getModules());
-        try {
-            ModuleUtility.checkDependencies(modules);
-        } catch (ModuleDependencyException e) {
-            e.printStackTrace();
-        }
+        ModuleUtility.checkDependencies(modules);
         assertEquals(getModules().size(), modules.size());
+    }
+
+    @Test
+    @DisplayName("Check dependent modules - missing soft dependency")
+    public void checkSoftDependencies() throws ModuleDependencyException {
+        Map<String, LocalModule> modules = new HashMap<>(getModules());
+        modules.remove("soft-lib-test-module");
+        ModuleUtility.checkDependencies(modules);
+        assertEquals(getModules().size() - 1, modules.size());
+    }
+
+    @Test
+    @DisplayName("Check dependent modules - missing dependency")
+    public void checkMissingDependencies() {
+        Map<String, LocalModule> modules = new HashMap<>(getModules());
+        modules.remove("lib-test-module");
+        assertThrows(ModuleDependencyException.class, () -> ModuleUtility.checkDependencies(modules));
+        assertEquals(getModules().size() - 2, modules.size());
+        assertNull(modules.get("test-module"));
     }
 
     private Map<String, LocalModule> getModules() {
