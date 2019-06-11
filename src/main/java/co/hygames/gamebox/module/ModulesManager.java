@@ -21,14 +21,15 @@ package co.hygames.gamebox.module;
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
+import co.hygames.gamebox.exceptions.module.ModuleDependencyException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.cloud.CloudManager;
 import co.hygames.gamebox.exceptions.module.CloudException;
-import co.hygames.gamebox.module.data.DependencyData;
+import co.hygames.gamebox.module.data.LocalModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.module.settings.ModulesSettings;
 import co.hygames.gamebox.utilities.FileUtility;
-import co.hygames.gamebox.utilities.versioning.VersionRangeUtility;
+import co.hygames.gamebox.utilities.ModuleUtility;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -62,57 +63,23 @@ public class ModulesManager {
     }
 
     private void checkDependencies() {
-        boolean foundIssue = true;
-        int iteration = 0;
-        while (foundIssue && !localModules.isEmpty()) {
-            if (iteration > 100) {
-                gameBox.getLogger().severe("Way too many cycles needed to check dependencies of the modules...");
-                break;
-            }
-            foundIssue = false;
-            Iterator<LocalModule> modules = localModules.values().iterator();
-            while (modules.hasNext()) {
-                LocalModule currentModule = modules.next();
-                for (DependencyData dependencyData : currentModule.getVersionData().getDependencies()) {
-                    LocalModule dependency = localModules.get(dependencyData.getId());
-                    if (dependency == null) {
-                        gameBox.getLogger().warning("The dependency '" + dependencyData.getId()
-                                + "' is missing for the module '" + currentModule.getModuleId() + "'");
-                        gameBox.getLogger().warning("   " + currentModule.getModuleId() + " asks for a version in the range '"
-                                + dependencyData.getVersionConstrain() + "'" );
-                        foundIssue = true;
-                        modules.remove();
-                        break;
-                    }
-                    try {
-                        if (!VersionRangeUtility.isInVersionRange(dependency.getVersion(), dependencyData.getVersionConstrain())) {
-                            gameBox.getLogger().warning("'" + currentModule.getModuleId() + "' asks for '"
-                                    + dependency.getModuleId() + "' with the version constrain '"
-                                    + dependencyData.getVersionConstrain() + "'");
-                            gameBox.getLogger().warning("   The installed version is '" + dependency.getVersion().toString() + "'" );
-                            foundIssue = true;
-                            modules.remove();
-                            break;
-                        }
-                    } catch (ParseException e) {
-                        // can be ignored, since the version ranges are parsed before
-                    }
-                }
-            }
-            iteration++;
-        }
-        if (iteration > 1) {
-            // ToDo
-            // link to some docs about version ranges? Some general info?
+        try {
+            ModuleUtility.checkDependencies(this.localModules);
+        } catch (ModuleDependencyException e) {
+            e.printStackTrace();
+            // ToDo: info about version range? Link to docs
         }
     }
 
     private void loadLocalModules() {
-        // ToDo: sort via dependencies
-        for (LocalModule localModule : localModules.values()) {
-            gameBox.getLogger().info("Loading module '" + localModule.getName() + "'...");
+        Map<String, LocalModule> modulesToLoad = localModules;
+        // GameBox doesn't need to be loaded
+        modulesToLoad.remove(GameBox.moduleId);
+        List<LocalModule> sortedModules = ModuleUtility.sortModulesByDependencies(modulesToLoad.values());
+        for (LocalModule localModule : sortedModules) {
+            gameBox.getLogger().fine("Loading module '" + localModule.getName() + "'...");
             if (loadedModules.containsKey(localModule.getModuleId())) {
-                gameBox.getLogger().info("    already loaded! Skipping...");
+                gameBox.getLogger().fine("    already loaded! Skipping...");
                 continue;
             }
             loadModule(localModule);
@@ -165,7 +132,7 @@ public class ModulesManager {
         List<File> jars = FileUtility.getAllJars(modulesDir);
         for (File jar : jars) {
             try {
-                LocalModule localModule = LocalModule.fromFile(jar);
+                LocalModule localModule = LocalModule.fromJar(jar);
                 localModules.put(localModule.getModuleId(), localModule);
             } catch (InvalidModuleException e) {
                 gameBox.getLogger().severe("Error while loading module from the jar '" + jar.getName() + "'");
@@ -173,6 +140,12 @@ public class ModulesManager {
                 gameBox.getLogger().severe("Skipping...");
             }
         }
+        // add GameBox as a local module
+        localModules.put(GameBox.moduleId, LocalModule.fromLocalModuleData(new LocalModuleData()
+                .withId(GameBox.moduleId)
+                .withVersion(getClass().getPackage().getImplementationVersion())
+                .withName(getClass().getPackage().getImplementationTitle())
+        ));
     }
 
     private void collectLocalModuleUpdates() {

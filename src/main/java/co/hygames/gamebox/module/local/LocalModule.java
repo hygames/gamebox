@@ -18,10 +18,10 @@
 
 package co.hygames.gamebox.module.local;
 
-import co.hygames.gamebox.module.GameBoxModule;
-import co.hygames.gamebox.module.data.*;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
+import co.hygames.gamebox.module.GameBoxModule;
+import co.hygames.gamebox.module.data.*;
 import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.ModuleUtility;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
@@ -100,22 +100,22 @@ public class LocalModule implements VersionedModule {
         return this;
     }
 
-    public static LocalModule fromFile(File file) throws InvalidModuleException {
+    public static LocalModule fromJar(File jar) throws InvalidModuleException {
         JarFile jarFile;
         LocalModule localModule = null;
         try {
-            jarFile = new JarFile(file);
+            jarFile = new JarFile(jar);
             InputStream moduleFile = jarFile.getInputStream(jarFile
                     .stream()
                     .filter(e -> e.getName().equals("module.yml"))
                     .findFirst()
-                    .orElseThrow(() -> new InvalidModuleException("No 'module.yml' found for " + file.getName())));
+                    .orElseThrow(() -> new InvalidModuleException("No 'module.yml' found for " + jar.getName())));
             LocalModuleData moduleData = YAML.loadAs(new InputStreamReader(moduleFile), LocalModuleData.class);
             ModuleUtility.validateLocalModuleData(moduleData);
             ModuleUtility.fillDefaults(moduleData);
             jarFile.close();
             localModule = fromLocalModuleData(moduleData);
-            localModule.setModuleJar(file);
+            localModule.setModuleJar(jar);
         } catch (IOException e) {
             e.printStackTrace();
         }
