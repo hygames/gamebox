@@ -47,7 +47,7 @@ public class TestLocalModuleFile {
 
     @BeforeAll
     public static void prepare() {
-        testLocalModuleFile = new File("src/test/resources/test_local_module.yml");
+        testLocalModuleFile = new File("src/test/resources/test_local_module_1.yml");
         manuallyBuildTestModule();
     }
 

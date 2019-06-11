@@ -1,0 +1,8 @@
+id: "soft-lib-test-module"
+name: "Test module"
+authors: ["Nikl"]
+description: "This module is only for test purposes"
+version: "1.2.1"
+dependencies:
+  - id: "gamebox"
+    versionConstrain: "~> 1.0"
