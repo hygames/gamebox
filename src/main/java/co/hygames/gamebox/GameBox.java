@@ -19,8 +19,10 @@
 package co.hygames.gamebox;
 
 import co.hygames.gamebox.module.ModulesManager;
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -35,6 +37,7 @@ public class GameBox {
     private ModulesManager modulesManager;
     private File dataFolder;
     private Logger logger;
+    private SemanticVersion version;
 
     public static void main(String args[]) {
         new GameBox().onEnable();
@@ -42,10 +45,15 @@ public class GameBox {
 
     public void onEnable() {
         instance = this;
-        setUp();
+        try {
+            setUp();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void setUp() {
+    private void setUp() throws ParseException {
+        version = new SemanticVersion(this.getClass().getPackage().getImplementationVersion());
         createLogger();
         dataFolder = new File("/home/nikl/Desktop/gamebox"); // testing ToDo: remove
         this.modulesManager = new ModulesManager(this);
@@ -87,5 +95,9 @@ public class GameBox {
     public File getLanguageDir() {
         // ToDo: move to responsible langauge class
         return null;
+    }
+
+    public SemanticVersion getVersion() {
+        return version;
     }
 }

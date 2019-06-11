@@ -120,7 +120,9 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>co.hygames.gamebox.GameBox</mainClass>
+                            <mainClass>co.hygames.gamebox.GameBox</mainClass><!-- remove -->
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                 </configuration>
