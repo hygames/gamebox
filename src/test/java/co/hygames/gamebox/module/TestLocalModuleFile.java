@@ -60,7 +60,7 @@ public class TestLocalModuleFile {
                 .withSourceUrl("https://github.com/hygames-team/gamebox-test-module")
                 .withVersion("1.0.0")
                 .withDependencies(Arrays.asList(new DependencyData().withId("gamebox").withVersionConstrain("~> 1.0")
-                        , new DependencyData().withId("softTest").withVersionConstrain("~> 1.0, > 1.2").withSoftDependency(true)));
+                        , new DependencyData().withId("lib-test-module").withVersionConstrain("~> 1.0, > 1.2")));
     }
 
     @Test
