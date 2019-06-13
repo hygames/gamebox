@@ -28,6 +28,7 @@
     <name>GameBox</name>
     <description>Hub for a variety of games</description>
     <url>http://gamebox.hygames.co</url>
+    <packaging>jar</packaging>
 
     <distributionManagement>
         <repository>
@@ -54,6 +55,7 @@
     </properties>
 
     <build>
+        <finalName>${project.name}-${project.version}</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -72,14 +74,30 @@
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
-                        </goals><!--
+                        </goals>
                         <configuration>
                             <artifactSet>
-                                <excludes>
-                                    <exclude>junit:junit</exclude>
-                                </excludes>
+                                <includes>
+                                    <include>com.google.code.gson:gson</include>
+                                    <include>org.apache.commons:commons-lang3</include>
+                                    <include>org.yaml:snakeyaml</include>
+                                </includes>
                             </artifactSet>
-                        </configuration>-->
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>co.hygames.gamebox.common.gson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons</pattern>
+                                    <shadedPattern>co.hygames.gamebox.common.commons</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.yaml.snakeyaml</pattern>
+                                    <shadedPattern>co.hygames.gamebox.common.snakeyaml</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -120,9 +138,8 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>co.hygames.gamebox.GameBox</mainClass><!-- remove -->
+                            <mainClass>co.hygames.gamebox.GameBox</mainClass><!-- for testing only! remove -->
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                 </configuration>
