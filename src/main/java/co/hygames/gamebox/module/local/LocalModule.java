@@ -35,7 +35,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.jar.JarFile;
 
 /**
@@ -58,6 +61,11 @@ public class LocalModule implements VersionedModule {
     private VersionData versionData;
     private SemanticVersion version;
     private File moduleJar;
+
+    // These sets are filled with dependencies and dependent modules during loading
+    //    soft dependencies will be listed if they are loaded
+    private Set<String> childModules = new HashSet<>();
+    private Set<String> parentModules = new HashSet<>();
 
     private LocalModule(String id, VersionData version) {
         this.moduleId = id;
@@ -177,5 +185,37 @@ public class LocalModule implements VersionedModule {
 
     public boolean sameIdAndVersion(LocalModule localModule) {
         return this.moduleId.equals(localModule.getModuleId()) && this.getVersion().equals(localModule.getVersion());
+    }
+
+    public boolean isChildModule(String moduleId) {
+        return this.childModules.contains(moduleId);
+    }
+
+    public boolean isParentModule(String moduleId) {
+        return this.parentModules.contains(moduleId);
+    }
+
+    public void addChildModule(String moduleId) {
+        this.childModules.add(moduleId);
+    }
+
+    public void addParentModule(String moduleId) {
+        this.parentModules.add(moduleId);
+    }
+
+    public void removeChildModule(String moduleId) {
+        this.childModules.remove(moduleId);
+    }
+
+    public void removeParentModule(String moduleId) {
+        this.parentModules.remove(moduleId);
+    }
+
+    public Set<String> getChildModules() {
+        return Collections.unmodifiableSet(this.childModules);
+    }
+
+    public Set<String> getParentModules() {
+        return Collections.unmodifiableSet(this.parentModules);
     }
 }
