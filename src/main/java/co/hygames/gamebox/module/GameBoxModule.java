@@ -20,46 +20,57 @@ package co.hygames.gamebox.module;
 
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.language.ModuleLanguage;
+import co.hygames.gamebox.module.local.LocalModule;
 
 import java.io.File;
 
 /**
+ * Module base class
+ *
  * @author Niklas Eicker
  */
 public abstract class GameBoxModule {
-    protected String identifier;
-    protected GameBox gameBox;
+    private LocalModule moduleData;
+    private GameBox gameBox;
     private File languageFolder;
     private File moduleFolder;
     protected ModuleLanguage moduleLanguage;
 
     protected GameBoxModule() {}
 
+    public abstract void onEnable();
+
+    public abstract void onDisable();
+
     public File getModuleFolder() {
         if (moduleFolder != null) return moduleFolder;
-        moduleFolder = new File(gameBox.getModulesManager().getModulesDir(), identifier);
+        moduleFolder = new File(gameBox.getModulesManager().getModulesDir(), getIdentifier());
         if (!moduleFolder.isDirectory()) moduleFolder.mkdirs();
         return moduleFolder;
     }
 
     public File getLanguageFolder() {
         if (languageFolder != null) return languageFolder;
-        languageFolder = new File(gameBox.getLanguageDir(), identifier);
+        languageFolder = new File(gameBox.getLanguageDir(), getIdentifier());
         if (!languageFolder.isDirectory()) languageFolder.mkdirs();
         return languageFolder;
     }
 
-    public String getIdentifier() {
-        return this.identifier;
+    public GameBox getGameBox() {
+        return this.gameBox;
     }
 
-    void setGameBox(GameBox gameBox) throws IllegalAccessException {
-        if (this.gameBox != null) throw new IllegalAccessException("Cannot change the GameBox instance in a module");
+    public String getIdentifier() {
+        return this.moduleData.getModuleId();
+    }
+
+    void setGameBox(GameBox gameBox) throws UnsupportedOperationException {
+        if (this.gameBox != null) throw new UnsupportedOperationException("Cannot change the GameBox instance in a module");
         this.gameBox = gameBox;
     }
 
-    void setIdentifier(String moduleId) throws IllegalAccessException {
-        if (this.identifier != null) throw new IllegalAccessException("Cannot change the identifier in a module");
-        this.identifier = moduleId;
+    void setModuleData(LocalModule moduleData) throws UnsupportedOperationException {
+        if (this.moduleData != null) throw new UnsupportedOperationException("Cannot change the module data");
+        this.moduleData = moduleData;
     }
 }
