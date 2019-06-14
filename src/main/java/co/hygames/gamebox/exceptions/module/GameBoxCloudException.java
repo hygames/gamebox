@@ -23,20 +23,20 @@ import co.hygames.gamebox.exceptions.GameBoxException;
 /**
  * Exception for issues concerning the module cloud
  */
-public class CloudException extends GameBoxException {
-    public CloudException(String message) {
+public class GameBoxCloudException extends GameBoxException {
+    public GameBoxCloudException(String message) {
         super(message);
     }
 
-    public CloudException(String message, Throwable throwable) {
+    public GameBoxCloudException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
-    public CloudException() {
+    public GameBoxCloudException() {
         super("There appears to be a problem with the module cloud");
     }
 
-    public CloudException(Throwable throwable) {
+    public GameBoxCloudException(Throwable throwable) {
         super("There appears to be a problem with the module cloud", throwable);
     }
 }

@@ -20,7 +20,7 @@ package co.hygames.gamebox.module.cloud;
 
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.database.Callback;
-import co.hygames.gamebox.exceptions.module.CloudException;
+import co.hygames.gamebox.exceptions.module.GameBoxCloudException;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
@@ -54,7 +54,7 @@ public class CloudManager {
         this.gameBox = gameBox;
     }
 
-    public void updateCloudContent() throws CloudException {
+    public void updateCloudContent() throws GameBoxCloudException {
         cloudContent.clear();
         try {
             CloudModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), CloudModuleData[].class);
@@ -63,21 +63,21 @@ public class CloudManager {
                 gameBox.getLogger().info("got moduledata for id:'" + moduleData.getId() + "'");
             }
         } catch (IOException e) {
-            throw new CloudException(e);
+            throw new GameBoxCloudException(e);
         }
     }
 
-    public void updateCloudModule(String moduleId) throws CloudException {
+    public void updateCloudModule(String moduleId) throws GameBoxCloudException {
         try {
             CloudModuleData moduleData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules/" + moduleId).openStream()), CloudModuleData.class);
             cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
         } catch (IOException e) {
-            throw new CloudException(e);
+            throw new GameBoxCloudException(e);
         }
     }
 
-    public CloudModuleData getModuleData(String moduleID) throws CloudException {
-        if (!cloudContent.containsKey(moduleID)) throw new CloudException("No module with the id '" + moduleID + "' was found on the cloud");
+    public CloudModuleData getModuleData(String moduleID) throws GameBoxCloudException {
+        if (!cloudContent.containsKey(moduleID)) throw new GameBoxCloudException("No module with the id '" + moduleID + "' was found on the cloud");
         return cloudContent.get(moduleID);
     }
 
