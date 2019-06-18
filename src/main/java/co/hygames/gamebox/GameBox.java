@@ -19,6 +19,7 @@
 package co.hygames.gamebox;
 
 import co.hygames.gamebox.module.ModulesManager;
+import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 
 import java.io.File;
@@ -36,6 +37,7 @@ public class GameBox {
     private static GameBox instance;
     private ModulesManager modulesManager;
     private File dataFolder;
+    private File languageFolder;
     private Logger logger;
     private SemanticVersion version;
 
@@ -45,6 +47,7 @@ public class GameBox {
 
     public void onEnable() {
         instance = this;
+        FileUtility.copyDefaultLanguageFiles();
         try {
             setUp();
         } catch (ParseException e) {
@@ -55,9 +58,8 @@ public class GameBox {
     private void setUp() throws ParseException {
         version = new SemanticVersion(this.getClass().getPackage().getImplementationVersion());
         createLogger();
-        dataFolder = new File("/home/nikl/Desktop/gamebox"); // testing ToDo: remove
         this.modulesManager = new ModulesManager(this);
-        modulesManager.installModule("test-module");
+        //modulesManager.installModule("test-module");
         // ToDo: load local modules and update info about cloud modules
     }
 
@@ -75,8 +77,8 @@ public class GameBox {
     }
 
     public File getDataFolder() {
-        // ToDo
-        return dataFolder;
+        // ToDo: testing! remove!
+        return new File("/home/nikl/Desktop/gamebox");
     }
 
     public Logger getLogger() {
@@ -93,8 +95,8 @@ public class GameBox {
     }
 
     public File getLanguageDir() {
-        // ToDo: move to responsible langauge class
-        return null;
+        if (languageFolder != null) return languageFolder;
+        return languageFolder = new File(getDataFolder(), "language");
     }
 
     public SemanticVersion getVersion() {
