@@ -95,6 +95,7 @@ public class ModuleUtility {
                         modules.remove();
                         break;
                     }
+                    if (dependencyData.getVersionConstrain() == null || dependencyData.getVersionConstrain().isEmpty()) continue;
                     try {
                         if (!VersionRangeUtility.isInVersionRange(dependency.getVersion(), dependencyData.getVersionConstrain())) {
                             if (dependencyData.isSoftDependency()) {
