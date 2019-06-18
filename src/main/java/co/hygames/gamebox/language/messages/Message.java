@@ -9,26 +9,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.language;
+package co.hygames.gamebox.language.messages;
 
-import co.hygames.gamebox.GameBox;
-import co.hygames.gamebox.module.GameBoxModule;
+import java.util.Map;
 
-/**
- * @author Niklas Eicker
- */
-public abstract class ModuleLanguage extends Language {
-    protected GameBox gameBox;
+public interface Message<T> {
+    T get();
 
-    public ModuleLanguage(GameBoxModule module) {
-        super(module.getLanguageFolder());
-        this.gameBox = module.getGameBox();
-    }
+    T resolve(Map<String, String> context);
 }

@@ -9,26 +9,23 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.language;
+package co.hygames.gamebox.exceptions.language;
 
-import co.hygames.gamebox.GameBox;
-import co.hygames.gamebox.module.GameBoxModule;
+import co.hygames.gamebox.exceptions.GameBoxException;
 
-/**
- * @author Niklas Eicker
- */
-public abstract class ModuleLanguage extends Language {
-    protected GameBox gameBox;
+public class LanguageException extends GameBoxException {
+    public LanguageException(String message) {
+        super(message);
+    }
 
-    public ModuleLanguage(GameBoxModule module) {
-        super(module.getLanguageFolder());
-        this.gameBox = module.getGameBox();
+    public LanguageException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

@@ -9,14 +9,14 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.language;
+package co.hygames.gamebox.language.messages;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ import java.util.List;
  * @author Niklas Eicker
  */
 public interface MessageSource {
-    String getMessage(String key);
+    Message<String> getMessage(String key);
 
-    List<String> getMessageList(String key);
+    Message<List<String>> getMessageList(String key);
 }
