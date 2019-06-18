@@ -54,7 +54,6 @@ public class FileUtility {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
@@ -71,10 +70,10 @@ public class FileUtility {
                 JarEntry entry = (JarEntry) list.nextElement();
                 if (entry.getName().split("/")[0].equals("language")) {
                     String[] pathParts = entry.getName().split("/");
-                    if (pathParts.length < 2 || !entry.getName().endsWith(".yml") || !entry.getName().endsWith(".yaml")) {
+                    if (pathParts.length < 2 || (!entry.getName().endsWith(".yml") && !entry.getName().endsWith(".yaml"))) {
                         continue;
                     }
-                    File file = new File(languageFolder, pathParts[1]);
+                    File file = new File(languageFolder, pathParts[pathParts.length - 1]);
                     if (!file.exists()) {
                         file.getParentFile().mkdirs();
                         streamToFile(jar.getInputStream(entry), file);
