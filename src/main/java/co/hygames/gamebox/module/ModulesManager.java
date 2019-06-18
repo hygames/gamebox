@@ -230,6 +230,8 @@ public class ModulesManager {
         }
         instance.setGameBox(gameBox);
         instance.setModuleData(localModule);
+        // prepare language files
+        FileUtility.copyDefaultLanguageFiles(instance, localModule);
         try {
             instance.onEnable();
         } catch (Exception e) { // catch all and skip module if there is an exception in onEnable

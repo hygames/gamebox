@@ -19,13 +19,10 @@
 package co.hygames.gamebox.utilities;
 
 import co.hygames.gamebox.GameBox;
+import co.hygames.gamebox.module.GameBoxModule;
+import co.hygames.gamebox.module.local.LocalModule;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +37,26 @@ import java.util.jar.JarInputStream;
  */
 public class FileUtility {
 
+    public static void copyDefaultLanguageFiles() {
+        URL main = GameBox.class.getResource("GameBox.class");
+        try {
+            JarURLConnection connection = (JarURLConnection) main.openConnection();
+            copyDefaultLanguageFiles(URLDecoder.decode(connection.getJarFileURL().getFile(), "UTF-8"), GameBox.getInstance().getLanguageDir());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void copyDefaultLanguageFiles(GameBoxModule module, LocalModule localModule) {
+        try {
+            String jarFile = URLDecoder.decode(localModule.getModuleJar().getAbsolutePath(), "UTF-8");
+            copyDefaultLanguageFiles(jarFile, module.getLanguageFolder());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     /**
      * Copy all default language files to the language folder.
      *
@@ -47,12 +64,9 @@ public class FileUtility {
      * and checks whether they are already present in the language folder.
      * If not they are copied.
      */
-    public static void copyDefaultLanguageFiles() {
-        URL main = GameBox.class.getResource("GameBox.class");
+    private static void copyDefaultLanguageFiles(String jarFile, File languageFolder) {
         try {
-            JarURLConnection connection = (JarURLConnection) main.openConnection();
-            JarFile jar = new JarFile(URLDecoder.decode(connection.getJarFileURL().getFile(), "UTF-8"));
-            GameBox gameBox = GameBox.getInstance();
+            JarFile jar = new JarFile(jarFile);
             for (Enumeration list = jar.entries(); list.hasMoreElements(); ) {
                 JarEntry entry = (JarEntry) list.nextElement();
                 if (entry.getName().split("/")[0].equals("language")) {
@@ -60,7 +74,7 @@ public class FileUtility {
                     if (pathParts.length < 2 || !entry.getName().endsWith(".yml") || !entry.getName().endsWith(".yaml")) {
                         continue;
                     }
-                    File file = new File(gameBox.getDataFolder().toString() + File.separatorChar + entry.getName());
+                    File file = new File(languageFolder, pathParts[1]);
                     if (!file.exists()) {
                         file.getParentFile().mkdirs();
                         streamToFile(jar.getInputStream(entry), file);
@@ -163,7 +177,7 @@ public class FileUtility {
         return gather(url, null, clazz);
     }
 
-    public static void streamToFile(InputStream initialStream, File targetFile) throws IOException {
+    private static void streamToFile(InputStream initialStream, File targetFile) throws IOException {
         byte[] buffer = new byte[initialStream.available()];
         initialStream.read(buffer);
         OutputStream outStream = new FileOutputStream(targetFile);
