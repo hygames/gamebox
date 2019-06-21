@@ -19,7 +19,6 @@
 package co.hygames.gamebox.language;
 
 import co.hygames.gamebox.GameBox;
-import co.hygames.gamebox.exceptions.language.LanguageException;
 import co.hygames.gamebox.language.messages.Message;
 
 import java.util.List;
@@ -28,29 +27,7 @@ import java.util.Map;
 public class GameBoxLanguage extends Language {
 
     public GameBoxLanguage(GameBox gameBox) {
-        super(gameBox.getLanguageDir());
-    }
 
-    @Override
-    protected void loadMessages() {
-        for (Messages message : Messages.values()) {
-            try {
-                loadMessage(message.getKey());
-            } catch (LanguageException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    protected void loadLists() {
-        for (Lists list : Lists.values()) {
-            try {
-                loadList(list.getKey());
-            } catch (LanguageException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public enum Messages implements Message<String> {

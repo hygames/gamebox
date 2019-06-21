@@ -60,7 +60,7 @@ public abstract class GameBoxModule {
         return this.gameBox;
     }
 
-    protected LocalModule getModuleData() {
+    public LocalModule getModuleData() {
         return this.moduleData;
     }
 

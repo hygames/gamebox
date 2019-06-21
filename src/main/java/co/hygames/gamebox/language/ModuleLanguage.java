@@ -19,6 +19,7 @@
 package co.hygames.gamebox.language;
 
 import co.hygames.gamebox.GameBox;
+import co.hygames.gamebox.exceptions.language.LanguageException;
 import co.hygames.gamebox.module.GameBoxModule;
 
 /**
@@ -28,7 +29,11 @@ public abstract class ModuleLanguage extends Language {
     protected GameBox gameBox;
 
     public ModuleLanguage(GameBoxModule module) {
-        super(module.getLanguageFolder());
         this.gameBox = module.getGameBox();
+        try {
+            setup(module.getLanguageFolder(), module.getModuleData().getModuleJar(), "lang_en.yml");
+        } catch (LanguageException e) {
+            e.printStackTrace();
+        }
     }
 }
