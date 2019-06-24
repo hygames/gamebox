@@ -60,12 +60,6 @@ public abstract class Language implements MessageSource {
             loadMessagesFromFolder(jarFile, defaultFile);
         }
         loadMessagesFromFolder(languageFolder, languageFile);
-        for (String key : messages.keySet()) {
-            GameBox.getInstance().getLogger().info(key + ": " + messages.get(key).get());
-        }
-        for (String key : lists.keySet()) {
-            GameBox.getInstance().getLogger().info(key + ": " + String.join(" ,", lists.get(key).get()));
-        }
     }
 
     private void loadMessagesFromJar(File jar) throws LanguageException {
