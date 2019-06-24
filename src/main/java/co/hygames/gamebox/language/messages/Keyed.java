@@ -18,33 +18,6 @@
 
 package co.hygames.gamebox.language.messages;
 
-import java.util.Map;
-
-public class SimpleMessage implements Message<String> {
-    private String message;
-    private String key;
-
-    public SimpleMessage(String message, String key) {
-        this.message = message;
-        this.key = key;
-    }
-
-    @Override
-    public String get() {
-        return this.message;
-    }
-
-    @Override
-    public String resolve(Map<String, String> context) {
-        String toReturn = this.message;
-        for (String placeholder : context.keySet()) {
-            toReturn = toReturn.replaceAll(placeholder, context.get(placeholder));
-        }
-        return toReturn;
-    }
-
-    @Override
-    public String getKey() {
-        return this.key;
-    }
+public interface Keyed {
+    String getKey();
 }

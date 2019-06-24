@@ -20,7 +20,7 @@ package co.hygames.gamebox.language.messages;
 
 import java.util.Map;
 
-public interface Message<T> {
+public interface Message<T> extends Keyed {
     T get();
 
     T resolve(Map<String, String> context);

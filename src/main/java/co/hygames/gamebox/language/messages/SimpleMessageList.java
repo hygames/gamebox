@@ -24,9 +24,11 @@ import java.util.Map;
 
 public class SimpleMessageList implements Message<List<String>> {
     private List<String> message;
+    private String key;
 
-    public SimpleMessageList(List<String> message) {
+    public SimpleMessageList(List<String> message, String key) {
         this.message = message;
+        this.key = key;
     }
 
     @Override
@@ -46,5 +48,10 @@ public class SimpleMessageList implements Message<List<String>> {
             msg = msg.replaceAll(placeholder, context.get(placeholder));
         }
         return msg;
+    }
+
+    @Override
+    public String getKey() {
+        return this.key;
     }
 }
