@@ -16,17 +16,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.exceptions.module;
+package co.hygames.gamebox;
 
-import co.hygames.gamebox.exceptions.GameBoxException;
+public class GameBoxSettings {
+    public static String LANGUAGE_FILE;
+    public static void load(GameBox instance) {
 
-/**
- * To be thrown, when a specified version of a module is not found
- */
-public class ModuleVersionException extends GameBoxException {
-    private static final long serialVersionUID = 1L;
-
-    public ModuleVersionException(String message) {
-        super(message);
     }
 }

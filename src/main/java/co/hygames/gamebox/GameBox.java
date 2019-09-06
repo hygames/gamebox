@@ -47,6 +47,8 @@ public class GameBox {
 
     public void onEnable() {
         instance = this;
+        // ToDo: testing! remove!
+        this.dataFolder = new File("/home/nikl/Desktop/gamebox");
         FileUtility.copyDefaultLanguageFiles();
         try {
             setUp();
@@ -56,7 +58,7 @@ public class GameBox {
     }
 
     private void setUp() throws ParseException {
-        version = new SemanticVersion(this.getClass().getPackage().getImplementationVersion());
+        this.version = new SemanticVersion(this.getClass().getPackage().getImplementationVersion());
         createLogger();
         this.modulesManager = new ModulesManager(this);
         //modulesManager.installModule("test-module");
@@ -69,7 +71,7 @@ public class GameBox {
         systemOut.setLevel( Level.ALL );
         logger.setUseParentHandlers(false);
         logger.addHandler( systemOut );
-        logger.setLevel(Level.FINEST); // Debugging... ToDo: remove
+        logger.setLevel(Level.FINEST); // ToDo: Debugging... remove
     }
 
     public static GameBox getInstance() {
@@ -77,8 +79,7 @@ public class GameBox {
     }
 
     public File getDataFolder() {
-        // ToDo: testing! remove!
-        return new File("/home/nikl/Desktop/gamebox");
+        return this.dataFolder;
     }
 
     public Logger getLogger() {

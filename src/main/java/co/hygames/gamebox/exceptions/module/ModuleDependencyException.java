@@ -24,6 +24,8 @@ import co.hygames.gamebox.exceptions.GameBoxException;
  * Thrown for missing module dependencies or cycle dependencies
  */
 public class ModuleDependencyException extends GameBoxException {
+    private static final long serialVersionUID = 1L;
+
     public ModuleDependencyException() {
         super();
     }

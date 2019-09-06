@@ -31,7 +31,7 @@ public class GameBoxLanguage extends Language {
     }
 
     public enum Messages implements Message<String> {
-        ;
+        NAME("name");
 
         static Language language;
         String key;

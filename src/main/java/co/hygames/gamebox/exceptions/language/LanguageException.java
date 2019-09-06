@@ -21,6 +21,8 @@ package co.hygames.gamebox.exceptions.language;
 import co.hygames.gamebox.exceptions.GameBoxException;
 
 public class LanguageException extends GameBoxException {
+    private static final long serialVersionUID = 1L;
+
     public LanguageException(String message) {
         super(message);
     }

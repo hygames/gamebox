@@ -24,6 +24,8 @@ import co.hygames.gamebox.exceptions.GameBoxException;
  * Exception for issues concerning the module cloud
  */
 public class GameBoxCloudException extends GameBoxException {
+    private static final long serialVersionUID = 1L;
+
     public GameBoxCloudException(String message) {
         super(message);
     }

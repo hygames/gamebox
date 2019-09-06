@@ -24,6 +24,8 @@ import co.hygames.gamebox.exceptions.GameBoxRuntimeException;
  * Thrown if a message is missing in the configured language file AND in the default file
  */
 public class MissingMessageException extends GameBoxRuntimeException {
+    private static final long serialVersionUID = 1L;
+
     public MissingMessageException(String message) {
         super(message);
     }

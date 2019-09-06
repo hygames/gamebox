@@ -27,6 +27,8 @@ import co.hygames.gamebox.exceptions.GameBoxException;
  * or no class extending {@link co.hygames.gamebox.module.GameBoxModule} is found.
  */
 public class InvalidModuleException extends GameBoxException {
+    private static final long serialVersionUID = 1L;
+
     public InvalidModuleException() {
         super();
     }

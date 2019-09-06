@@ -19,6 +19,8 @@
 package co.hygames.gamebox.exceptions;
 
 public class GameBoxRuntimeException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+
     public GameBoxRuntimeException() {
         super();
     }
