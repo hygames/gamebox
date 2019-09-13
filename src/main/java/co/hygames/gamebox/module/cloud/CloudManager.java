@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,13 +56,15 @@ public class CloudManager {
     }
 
     public void updateCloudContent() throws GameBoxCloudException {
-        cloudContent.clear();
         try {
             CloudModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), CloudModuleData[].class);
+            cloudContent.clear();
             for (CloudModuleData moduleData : modulesData) {
                 cloudContent.put(moduleData.getId(), moduleData);
                 gameBox.getLogger().info("got moduledata for id:'" + moduleData.getId() + "'");
             }
+        } catch (UnknownHostException e) {
+            throw new GameBoxCloudException("Connection problem to the cloud. Please make sure that you are connected to the internet.", e);
         } catch (IOException e) {
             throw new GameBoxCloudException(e);
         }
@@ -77,8 +80,9 @@ public class CloudManager {
     }
 
     public CloudModuleData getModuleData(String moduleID) throws GameBoxCloudException {
-        if (!cloudContent.containsKey(moduleID)) throw new GameBoxCloudException("No module with the id '" + moduleID + "' was found on the cloud");
-        return cloudContent.get(moduleID);
+        CloudModuleData cloudModuleData = cloudContent.get(moduleID);
+        if (cloudModuleData == null) throw new GameBoxCloudException("No moduledata found for ID '" + moduleID + "'");
+        return cloudModuleData;
     }
 
     public boolean hasUpdate(LocalModule localModule) throws ParseException {
