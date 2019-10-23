@@ -72,15 +72,23 @@ public abstract class Language implements MessageSource {
     }
 
     private Map getMessageMapFromJar(File jar, String languageFile) throws LanguageException {
+        JarFile jarFile;
+        Map toReturn;
         try {
-            JarFile jarFile = new JarFile(jar);
+            jarFile = new JarFile(jar);
             JarEntry entry = jarFile.getJarEntry("language/" + languageFile);
             if (entry == null) {
                 throw new LanguageException("Language file '" + languageFile + "' not found in jar " + jarFile.getName());
             }
-            return yaml.load(jarFile.getInputStream(entry));
+            toReturn = yaml.load(jarFile.getInputStream(entry));
         } catch (IOException e) {
             throw new LanguageException("Exception while loading messages from " + languageFile + " in the jar " + jar.getName());
+        } finally {
+            try {
+                if(jarFile != null) jarFile.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

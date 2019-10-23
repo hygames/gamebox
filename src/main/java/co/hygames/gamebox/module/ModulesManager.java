@@ -232,6 +232,7 @@ public class ModulesManager {
         instance.setModuleData(localModule);
         // prepare language files
         FileUtility.copyDefaultLanguageFiles(instance, localModule);
+        loadedModules.put(localModule.getModuleId(), instance);
         try {
             instance.onEnable();
         } catch (Exception e) { // catch all and skip module if there is an exception in onEnable
@@ -240,7 +241,6 @@ public class ModulesManager {
             unloadModule(localModule);
             return;
         }
-        loadedModules.put(localModule.getModuleId(), instance);
     }
 
     private void unloadModule(LocalModule localModule) {
@@ -252,6 +252,8 @@ public class ModulesManager {
             } catch (Exception e) {
                 gameBox.getLogger().severe("Exception while disabling " + localModule.getName() + " @" + localModule.getVersion().toString() + ":");
                 e.printStackTrace();
+            } finally {
+                loadedModules.remove(localModule.getModuleId());
             }
         }
     }
