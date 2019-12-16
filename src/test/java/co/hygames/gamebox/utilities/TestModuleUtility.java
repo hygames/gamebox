@@ -18,7 +18,7 @@
 
 package co.hygames.gamebox.utilities;
 
-import co.hygames.gamebox.GameBox;
+import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.exceptions.module.ModuleDependencyException;
 import co.hygames.gamebox.module.data.LocalModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
@@ -30,8 +30,6 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,33 +47,32 @@ public class TestModuleUtility {
     }
 
     @BeforeAll
-    public static void prepare() throws FileNotFoundException {
+    public static void prepare() {
         for (int i = 1; i < 6; i++) {
-            LocalModuleData data = YAML.loadAs(new FileReader(new File("src/test/resources/test_local_module_" + i + ".yml")), LocalModuleData.class);
-            modules.put(data.getId(), LocalModule.fromLocalModuleData(data));
+            try {
+                LocalModule module = LocalModule.fromJar(new File("src/test/resources/test_local_module_" + i + ".jar"));
+                modules.put(module.getId(), module);
+            } catch (InvalidModuleException e) {
+                e.printStackTrace();
+            }
         }
-        // add GameBox as a local module
-        modules.put(GameBox.moduleId, LocalModule.fromLocalModuleData(new LocalModuleData()
-                .withId(GameBox.moduleId)
-                .withVersion("1.0.1")
-        ));
     }
 
     @Test
     @DisplayName("Check dependent modules - no missing dependencies")
-    public void checkDependencies() throws ModuleDependencyException {
-        Map<String, LocalModule> modules = new HashMap<>(getModules());
-        ModuleUtility.checkDependencies(modules);
-        assertEquals(getModules().size(), modules.size());
+    public void checkDependencies() {
+        Map<String, LocalModule> modules = getModules();
+        ModuleUtility.DependencyReport report = ModuleUtility.checkDependencies(modules);
+        assertEquals(0, report.getRemovedModules().size());
     }
 
     @Test
     @DisplayName("Check dependent modules - missing soft dependency")
-    public void checkSoftDependencies() throws ModuleDependencyException {
+    public void checkSoftDependencies() {
         Map<String, LocalModule> modules = new HashMap<>(getModules());
         modules.remove("soft-lib-test-module");
-        ModuleUtility.checkDependencies(modules);
-        assertEquals(getModules().size() - 1, modules.size());
+        ModuleUtility.DependencyReport report = ModuleUtility.checkDependencies(modules);
+        assertEquals(0, report.getRemovedModules().size());
     }
 
     @Test
@@ -83,9 +80,9 @@ public class TestModuleUtility {
     public void checkMissingDependencies() {
         Map<String, LocalModule> modules = new HashMap<>(getModules());
         modules.remove("lib-test-module");
-        assertThrows(ModuleDependencyException.class, () -> ModuleUtility.checkDependencies(modules));
-        assertEquals(getModules().size() - 2, modules.size());
-        assertNull(modules.get("test-module"));
+        ModuleUtility.DependencyReport report = ModuleUtility.checkDependencies(modules);
+        assertEquals(1, report.getRemovedModules().size());
+        assertTrue(report.getRemovedModules().contains("test-module"));
     }
 
     private Map<String, LocalModule> getModules() {
