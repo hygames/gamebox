@@ -43,7 +43,7 @@ import java.util.jar.JarFile;
 /**
  * @author Niklas Eicker
  */
-public class LocalModule implements VersionedModule, ModuleData {
+public class LocalModule extends VersionedModule {
     private static final Gson GSON = new Gson();
     private static final Yaml YAML;
     static {
@@ -96,11 +96,11 @@ public class LocalModule implements VersionedModule, ModuleData {
         return instance.fillInfo(moduleData);
     }**/
 
-    private LocalModule fillInfo(ModuleData moduleData) {
-        this.setName(moduleData.getName());
-        this.setAuthors(moduleData.getAuthors());
-        this.setDescription(moduleData.getDescription());
-        this.setSourceUrl(moduleData.getSourceUrl());
+    private LocalModule fillInfo(ModuleInfo moduleInfo) {
+        this.setName(moduleInfo.getName());
+        this.setAuthors(moduleInfo.getAuthors());
+        this.setDescription(moduleInfo.getDescription());
+        this.setSourceUrl(moduleInfo.getSourceUrl());
         try {
             this.setVersion(new SemanticVersion(this.getVersionData().getVersion()));
         } catch (ParseException e) {

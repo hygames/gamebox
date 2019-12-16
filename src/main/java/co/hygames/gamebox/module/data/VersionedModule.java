@@ -18,7 +18,7 @@
 
 package co.hygames.gamebox.module.data;
 
-public interface VersionedModule {
+public abstract class VersionedModule implements ModuleInfo, ModuleVersionInfo {
 
-    VersionData getVersionData();
+    public abstract VersionData getVersionData();
 }

@@ -22,7 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalModuleData implements ModuleData, Serializable {
+public class LocalModuleData implements ModuleInfo, Serializable {
     private String id;
     private List<String> authors = new ArrayList<>();
     private String name;

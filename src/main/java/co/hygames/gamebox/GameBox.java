@@ -19,11 +19,16 @@
 package co.hygames.gamebox;
 
 import co.hygames.gamebox.module.ModulesManager;
+import co.hygames.gamebox.module.data.VersionData;
+import co.hygames.gamebox.module.data.VersionedModule;
 import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -33,7 +38,59 @@ import java.util.logging.Logger;
  * @author Niklas Eicker
  */
 public class GameBox {
-    public static final String moduleId = "gamebox";
+    public static VersionedModule versionInfo;
+    static {
+        try {
+            final String ID = "gamebox";
+            final SemanticVersion VERSION = new SemanticVersion("1.0.0");
+            final String NAME = "GameBox";
+            final String DESCRIPTION = "GameBox is a collection of inventory games";
+            final String SOURCE = "https://github.com/hygames-team/gamebox";
+            final List AUTHORS = Arrays.asList("Niklas Eicker");
+            final List DEPENDENCIES = Collections.EMPTY_LIST;
+            final VersionData versionData = new VersionData().withVersion(VERSION.toString()).withDependencies(DEPENDENCIES);
+            // This instance is simply for easy dependency checking of other modules. By handling GameBox just like
+            // any other module dependency, it is made much easier for module authors to depend on a specific GameBox version
+            versionInfo = new VersionedModule() {
+                @Override
+                public VersionData getVersionData() {
+                    return versionData;
+                }
+
+                @Override
+                public SemanticVersion getVersion() {
+                    return VERSION;
+                }
+
+                @Override
+                public String getId() {
+                    return ID;
+                }
+
+                @Override
+                public List<String> getAuthors() {
+                    return AUTHORS;
+                }
+
+                @Override
+                public String getName() {
+                    return NAME;
+                }
+
+                @Override
+                public String getDescription() {
+                    return DESCRIPTION;
+                }
+
+                @Override
+                public String getSourceUrl() {
+                    return SOURCE;
+                }
+            };
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+    }
     private static GameBox instance;
     private ModulesManager modulesManager;
     private File dataFolder;

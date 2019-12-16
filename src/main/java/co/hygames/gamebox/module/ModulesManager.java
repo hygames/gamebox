@@ -26,8 +26,7 @@ import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.cloud.CloudManager;
 import co.hygames.gamebox.exceptions.module.GameBoxCloudException;
 import co.hygames.gamebox.module.data.CloudModuleData;
-import co.hygames.gamebox.module.data.LocalModuleData;
-import co.hygames.gamebox.module.data.ModuleData;
+import co.hygames.gamebox.module.data.ModuleInfo;
 import co.hygames.gamebox.module.data.VersionData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.module.settings.ModulesSettings;
@@ -40,6 +39,7 @@ import org.yaml.snakeyaml.representer.Representer;
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * @author Niklas Eicker
@@ -66,18 +66,15 @@ public class ModulesManager {
     }
 
     private void checkDependencies() {
-        try {
-            ModuleUtility.checkDependencies(this.localModules);
-        } catch (ModuleDependencyException e) {
-            e.printStackTrace();
+        ModuleUtility.DependencyReport report = ModuleUtility.checkDependencies(this.localModules);
+        if (!report.isOk()) {
+            report.getLog().forEach(s -> gameBox.getLogger().severe(s));
             // ToDo: info about version range? Link to docs
         }
     }
 
     private void loadLocalModules() {
         Map<String, LocalModule> modulesToLoad = localModules;
-        // GameBox doesn't need to be loaded
-        modulesToLoad.remove(GameBox.moduleId);
         List<LocalModule> sortedModules = ModuleUtility.sortModulesByDependencies(modulesToLoad.values());
         for (LocalModule localModule : sortedModules) {
             gameBox.getLogger().fine("Loading module '" + localModule.getName() + "'...");
@@ -203,9 +200,9 @@ public class ModulesManager {
         if (matchingVersion == null) {
             throw new ModuleVersionException("Version '" + version + "' of the module '" + cloudModule.getId() + "' cannot be found");
         }
-        cloudManager.downloadModule(cloudModule, version, new Callback<ModuleData>() {
+        cloudManager.downloadModule(cloudModule, version, new Callback<ModuleInfo>() {
             @Override
-            public void success(ModuleData result) {
+            public void success(ModuleInfo result) {
                 if(!(result instanceof LocalModule)) {
                     throw new IllegalArgumentException("A successfully downloaded Module should result in a LocalModule instance");
                 }
@@ -218,7 +215,7 @@ public class ModulesManager {
             }
 
             @Override
-            public void fail(ModuleData defaultResult, Exception exception) {
+            public void fail(ModuleInfo defaultResult, Exception exception) {
                 gameBox.getLogger().severe("Error while downloading module '" + defaultResult.getName() + "' version " + version);
                 if (exception != null) exception.printStackTrace();
             }

@@ -20,7 +20,7 @@ package co.hygames.gamebox.module.data;
 
 import java.util.List;
 
-public interface ModuleData {
+public interface ModuleInfo {
     String getId();
 
     List<String> getAuthors();
