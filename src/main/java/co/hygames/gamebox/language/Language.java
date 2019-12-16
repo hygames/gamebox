@@ -125,7 +125,10 @@ public abstract class Language implements MessageSource {
             Object entry = messageMap.get(key);
             String currentPath = path.isEmpty()?key.toString():path + "." + key.toString();
             if (entry instanceof Map) readLanguageMap((Map) entry, currentPath, messages, lists);
-            else if (entry instanceof List) lists.put(currentPath, new SimpleMessageList((List<String>) entry, currentPath));
+            else if (entry instanceof List) {
+                @SuppressWarnings("unchecked") List<String> list = (List<String>) entry;
+                lists.put(currentPath, new SimpleMessageList(list, currentPath));
+            }
             else if (entry instanceof String) messages.put(currentPath, new SimpleMessage((String) entry, currentPath));
             else {
                 GameBox.getInstance().getLogger().warning("Unexpected entry in language file...");

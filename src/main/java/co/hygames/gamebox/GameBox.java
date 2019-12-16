@@ -19,6 +19,7 @@
 package co.hygames.gamebox;
 
 import co.hygames.gamebox.module.ModulesManager;
+import co.hygames.gamebox.module.data.DependencyData;
 import co.hygames.gamebox.module.data.VersionData;
 import co.hygames.gamebox.module.data.VersionedModule;
 import co.hygames.gamebox.utilities.FileUtility;
@@ -26,8 +27,8 @@ import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
@@ -46,8 +47,8 @@ public class GameBox {
             final String NAME = "GameBox";
             final String DESCRIPTION = "GameBox is a collection of inventory games";
             final String SOURCE = "https://github.com/hygames-team/gamebox";
-            final List AUTHORS = Arrays.asList("Niklas Eicker");
-            final List DEPENDENCIES = Collections.EMPTY_LIST;
+            final List<String> AUTHORS = Arrays.asList("Niklas Eicker");
+            final List<DependencyData> DEPENDENCIES = new ArrayList<>();
             final VersionData versionData = new VersionData().withVersion(VERSION.toString()).withDependencies(DEPENDENCIES);
             // This instance is simply for easy dependency checking of other modules. By handling GameBox just like
             // any other module dependency, it is made much easier for module authors to depend on a specific GameBox version
@@ -98,7 +99,7 @@ public class GameBox {
     private Logger logger;
     private SemanticVersion version;
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         new GameBox().onEnable();
     }
 
