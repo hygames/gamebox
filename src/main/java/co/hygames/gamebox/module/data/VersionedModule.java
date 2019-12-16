@@ -20,7 +20,5 @@ package co.hygames.gamebox.module.data;
 
 public interface VersionedModule {
 
-    String getModuleId();
-
     VersionData getVersionData();
 }

@@ -65,7 +65,7 @@ public abstract class GameBoxModule {
     }
 
     public String getIdentifier() {
-        return this.moduleData.getModuleId();
+        return this.moduleData.getId();
     }
 
     void setGameBox(GameBox gameBox) throws UnsupportedOperationException {

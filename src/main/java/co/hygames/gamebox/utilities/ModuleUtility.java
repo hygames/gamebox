@@ -62,10 +62,10 @@ public class ModuleUtility {
             if (dependencyData2.isEmpty()) {
                 return -1;
             }
-            if (dependencyData1.stream().anyMatch(dep -> dep.getId().equals(localModule2.getModuleId()))) {
+            if (dependencyData1.stream().anyMatch(dep -> dep.getId().equals(localModule2.getId()))) {
                 return -1;
             }
-            if (dependencyData2.stream().anyMatch(dep -> dep.getId().equals(localModule1.getModuleId()))) {
+            if (dependencyData2.stream().anyMatch(dep -> dep.getId().equals(localModule1.getId()))) {
                 return 1;
             }
             return 0;
@@ -88,8 +88,8 @@ public class ModuleUtility {
                             continue;
                         }
                         log.add("The dependency '" + dependencyData.getId()
-                                + "' is missing for the module '" + currentModule.getModuleId() + "'");
-                        log.add("   " + currentModule.getModuleId() + " asks for a version in the range '"
+                                + "' is missing for the module '" + currentModule.getId() + "'");
+                        log.add("   " + currentModule.getId() + " asks for a version in the range '"
                                 + dependencyData.getVersionConstrain() + "'" );
                         foundIssue = true;
                         modules.remove();
@@ -101,8 +101,8 @@ public class ModuleUtility {
                             if (dependencyData.isSoftDependency()) {
                                 continue;
                             }
-                            log.add("'" + currentModule.getModuleId() + "' asks for '"
-                                    + dependency.getModuleId() + "' with the version constrain '"
+                            log.add("'" + currentModule.getId() + "' asks for '"
+                                    + dependency.getId() + "' with the version constrain '"
                                     + dependencyData.getVersionConstrain() + "'");
                             log.add("   The installed version is '" + dependency.getVersion().toString() + "'" );
                             foundIssue = true;

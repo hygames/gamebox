@@ -25,7 +25,10 @@ import co.hygames.gamebox.exceptions.module.ModuleDependencyException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.cloud.CloudManager;
 import co.hygames.gamebox.exceptions.module.GameBoxCloudException;
+import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.module.data.LocalModuleData;
+import co.hygames.gamebox.module.data.ModuleData;
+import co.hygames.gamebox.module.data.VersionData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.module.settings.ModulesSettings;
 import co.hygames.gamebox.utilities.FileUtility;
@@ -78,7 +81,7 @@ public class ModulesManager {
         List<LocalModule> sortedModules = ModuleUtility.sortModulesByDependencies(modulesToLoad.values());
         for (LocalModule localModule : sortedModules) {
             gameBox.getLogger().fine("Loading module '" + localModule.getName() + "'...");
-            if (loadedModules.containsKey(localModule.getModuleId())) {
+            if (loadedModules.containsKey(localModule.getId())) {
                 gameBox.getLogger().fine("    already loaded! Skipping...");
                 continue;
             }
@@ -134,19 +137,13 @@ public class ModulesManager {
         for (File jar : jars) {
             try {
                 LocalModule localModule = LocalModule.fromJar(jar);
-                localModules.put(localModule.getModuleId(), localModule);
+                localModules.put(localModule.getId(), localModule);
             } catch (InvalidModuleException e) {
                 gameBox.getLogger().severe("Error while loading module from the jar '" + jar.getName() + "'");
                 e.printStackTrace();
                 gameBox.getLogger().severe("Skipping...");
             }
         }
-        // add GameBox as a local module
-        localModules.put(GameBox.moduleId, LocalModule.fromLocalModuleData(new LocalModuleData()
-                .withId(GameBox.moduleId)
-                .withVersion(getClass().getPackage().getImplementationVersion())
-                .withName(getClass().getPackage().getImplementationTitle())
-        ));
     }
 
     private void collectLocalModuleUpdates() {
@@ -175,42 +172,54 @@ public class ModulesManager {
     public void installModule(String moduleId) {
         gameBox.getLogger().fine("Install module '" + moduleId +"'...");
         try {
-            LocalModule localModule = LocalModule.fromCloudModuleData(cloudManager.getModuleData(moduleId));
-            if (localModules.containsKey(moduleId) && localModules.get(moduleId).sameIdAndVersion(localModule)) {
+            CloudModuleData cloudModule = cloudManager.getModuleData(moduleId);
+            if (localModules.containsKey(moduleId) && localModules.get(moduleId).getVersion().toString().equals(cloudModule.getLatestVersion())) {
                 // module already installed!
-                gameBox.getLogger().fine("Attempted to install already installed module '" + localModule.getModuleId() +"' @" + localModule.getVersion().toString());
+                gameBox.getLogger().fine("Attempted to install already installed module '" + moduleId +"' @" + cloudModule.getLatestVersion());
                 return;
             }
-            installModule(localModule);
+            installModule(cloudModule, cloudModule.getLatestVersion());
         } catch (ModuleVersionException | GameBoxCloudException e) {
             e.printStackTrace();
-            return;
         }
     }
 
-    public void installModule(String moduleId, String version) {
+    public void installModule(String moduleId, String version) throws ModuleVersionException {
         try {
-            LocalModule localModule = LocalModule.fromCloudModuleData(cloudManager.getModuleData(moduleId), version);
-            installModule(localModule);
-        } catch (ModuleVersionException | GameBoxCloudException e) {
+            installModule(cloudManager.getModuleData(moduleId), version);
+        } catch (GameBoxCloudException e) {
             e.printStackTrace();
         }
     }
 
-    public void installModule(LocalModule localModule) {
-        cloudManager.downloadModule(localModule, new Callback<LocalModule>() {
+    public void installModule(CloudModuleData cloudModule, String version) throws ModuleVersionException {
+        VersionData matchingVersion = null;
+        for (VersionData versionData : cloudModule.getVersions()) {
+            if (versionData.getVersion().equals(version)) {
+                matchingVersion = versionData;
+                break;
+            }
+        }
+        if (matchingVersion == null) {
+            throw new ModuleVersionException("Version '" + version + "' of the module '" + cloudModule.getId() + "' cannot be found");
+        }
+        cloudManager.downloadModule(cloudModule, version, new Callback<ModuleData>() {
             @Override
-            public void success(LocalModule result) {
+            public void success(ModuleData result) {
+                if(!(result instanceof LocalModule)) {
+                    throw new IllegalArgumentException("A successfully downloaded Module should result in a LocalModule instance");
+                }
+                LocalModule module = (LocalModule) result;
                 gameBox.getLogger().info("Download complete. Loading the module...");
-                localModules.put(result.getModuleId(), result);
-                addModuleToSettings(result.getModuleId());
+                localModules.put(module.getId(), module);
+                addModuleToSettings(module.getId());
                 // ToDo: should be careful here with dependencies... check for any and if a reload is needed do it automatically, or ask the source of the installation for an OK
-                loadModule(result);
+                loadModule(module);
             }
 
             @Override
-            public void fail(LocalModule defaultResult, Exception exception) {
-                gameBox.getLogger().severe("Error while downloading module '" + defaultResult.getName() + "' version " + defaultResult.getVersion().toString());
+            public void fail(ModuleData defaultResult, Exception exception) {
+                gameBox.getLogger().severe("Error while downloading module '" + defaultResult.getName() + "' version " + version);
                 if (exception != null) exception.printStackTrace();
             }
         });
@@ -232,7 +241,7 @@ public class ModulesManager {
         instance.setModuleData(localModule);
         // prepare language files
         FileUtility.copyDefaultLanguageFiles(instance, localModule);
-        loadedModules.put(localModule.getModuleId(), instance);
+        loadedModules.put(localModule.getId(), instance);
         try {
             instance.onEnable();
         } catch (Exception e) { // catch all and skip module if there is an exception in onEnable
@@ -245,7 +254,7 @@ public class ModulesManager {
 
     private void unloadModule(LocalModule localModule) {
         // ToDo: unload parent modules first!
-        GameBoxModule instance = loadedModules.get(localModule.getModuleId());
+        GameBoxModule instance = loadedModules.get(localModule.getId());
         if (instance != null) {
             try {
                 instance.onDisable();
@@ -253,7 +262,7 @@ public class ModulesManager {
                 gameBox.getLogger().severe("Exception while disabling " + localModule.getName() + " @" + localModule.getVersion().toString() + ":");
                 e.printStackTrace();
             } finally {
-                loadedModules.remove(localModule.getModuleId());
+                loadedModules.remove(localModule.getId());
             }
         }
     }

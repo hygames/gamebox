@@ -72,7 +72,7 @@ public abstract class Language implements MessageSource {
     }
 
     private Map getMessageMapFromJar(File jar, String languageFile) throws LanguageException {
-        JarFile jarFile;
+        JarFile jarFile = null;
         Map toReturn;
         try {
             jarFile = new JarFile(jar);
@@ -90,6 +90,7 @@ public abstract class Language implements MessageSource {
                 e.printStackTrace();
             }
         }
+        return toReturn;
     }
 
     private void loadMessagesFromFolder(File folder) throws LanguageException {

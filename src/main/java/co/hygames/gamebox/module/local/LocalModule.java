@@ -19,7 +19,6 @@
 package co.hygames.gamebox.module.local;
 
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
-import co.hygames.gamebox.exceptions.module.ModuleVersionException;
 import co.hygames.gamebox.module.GameBoxModule;
 import co.hygames.gamebox.module.data.*;
 import co.hygames.gamebox.utilities.FileUtility;
@@ -44,7 +43,7 @@ import java.util.jar.JarFile;
 /**
  * @author Niklas Eicker
  */
-public class LocalModule implements VersionedModule {
+public class LocalModule implements VersionedModule, ModuleData {
     private static final Gson GSON = new Gson();
     private static final Yaml YAML;
     static {
@@ -57,6 +56,7 @@ public class LocalModule implements VersionedModule {
     private String moduleId;
     private String name;
     private String description;
+    private String sourceUrl;
     private List<String> authors;
     private VersionData versionData;
     private SemanticVersion version;
@@ -72,12 +72,12 @@ public class LocalModule implements VersionedModule {
         this.versionData = version;
     }
 
-    public static LocalModule fromLocalModuleData(LocalModuleData moduleData) {
+    private static LocalModule fromLocalModuleData(LocalModuleData moduleData) {
         LocalModule instance = new LocalModule(moduleData.getId(), new VersionData().withVersion(moduleData.getVersion()).withDependencies(moduleData.getDependencies()));
         return instance.fillInfo(moduleData);
     }
 
-    public static LocalModule fromCloudModuleData(CloudModuleData moduleData) throws ModuleVersionException {
+    /*public static LocalModule fromCloudModuleData(CloudModuleData moduleData) throws ModuleVersionException {
         return fromCloudModuleData(moduleData, moduleData.getLatestVersion());
     }
 
@@ -94,12 +94,13 @@ public class LocalModule implements VersionedModule {
         }
         LocalModule instance =  new LocalModule(moduleData.getId(), matchingVersion);
         return instance.fillInfo(moduleData);
-    }
+    }**/
 
     private LocalModule fillInfo(ModuleData moduleData) {
         this.setName(moduleData.getName());
         this.setAuthors(moduleData.getAuthors());
         this.setDescription(moduleData.getDescription());
+        this.setSourceUrl(moduleData.getSourceUrl());
         try {
             this.setVersion(new SemanticVersion(this.getVersionData().getVersion()));
         } catch (ParseException e) {
@@ -131,11 +132,6 @@ public class LocalModule implements VersionedModule {
     }
 
     @Override
-    public String getModuleId() {
-        return this.moduleId;
-    }
-
-    @Override
     public VersionData getVersionData() {
         return this.versionData;
     }
@@ -163,8 +159,18 @@ public class LocalModule implements VersionedModule {
         return description;
     }
 
+    @Override
+    public String getSourceUrl() {
+        return this.sourceUrl;
+    }
+
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String getId() {
+        return this.moduleId;
     }
 
     public List<String> getAuthors() {
@@ -184,7 +190,7 @@ public class LocalModule implements VersionedModule {
     }
 
     public boolean sameIdAndVersion(LocalModule localModule) {
-        return this.moduleId.equals(localModule.getModuleId()) && this.getVersion().equals(localModule.getVersion());
+        return this.moduleId.equals(localModule.getId()) && this.getVersion().equals(localModule.getVersion());
     }
 
     public boolean isChildModule(String moduleId) {
@@ -217,5 +223,9 @@ public class LocalModule implements VersionedModule {
 
     public Set<String> getParentModules() {
         return Collections.unmodifiableSet(this.parentModules);
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
     }
 }

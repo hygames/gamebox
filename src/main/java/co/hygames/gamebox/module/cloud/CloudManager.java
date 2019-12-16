@@ -23,6 +23,7 @@ import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.GameBoxCloudException;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.module.data.CloudModuleData;
+import co.hygames.gamebox.module.data.ModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
@@ -86,7 +87,7 @@ public class CloudManager {
     }
 
     public boolean hasUpdate(LocalModule localModule) throws ParseException {
-        CloudModuleData cloudModule = cloudContent.get(localModule.getModuleId());
+        CloudModuleData cloudModule = cloudContent.get(localModule.getId());
         if (cloudModule == null) {
             // might be local module
             return false;
@@ -96,18 +97,18 @@ public class CloudManager {
         return newestCloudVersion.isUpdateFor(localVersion);
     }
 
-    public void downloadModule(LocalModule localModule, Callback<LocalModule> callback) {
-        final String fileName = localModule.getModuleId() + "@" + localModule.getVersion().toString() + ".jar";
+    public void downloadModule(CloudModuleData cloudModule, String version, Callback<ModuleData> callback) {
+        final String fileName = cloudModule.getId() + "@" + version + ".jar";
         try {
             final File outputFile = new File(gameBox.getModulesManager().getModulesDir(), fileName);
             if (outputFile.isFile()) {
-                gameBox.getLogger().info("Module " + localModule.getName() + " @" + localModule.getVersion().toString() + " already exists...");
+                gameBox.getLogger().info("Module " + cloudModule.getName() + " @" + version + " already exists...");
                 gameBox.getLogger().info("   skipping download of '" + fileName + "'");
                 try {
-                    localModule.setModuleJar(outputFile);
+                    LocalModule localModule = LocalModule.fromJar(outputFile);
                     callback.success(localModule);
                 } catch (InvalidModuleException e) {
-                    callback.fail(localModule, e);
+                    callback.fail(null, e);
                 }
                 return;
             }
@@ -122,17 +123,17 @@ public class CloudManager {
                     while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                         fileOutputStream.write(dataBuffer, 0, bytesRead);
                     }
-                    localModule.setModuleJar(outputFile);
+                    LocalModule localModule = LocalModule.fromJar(outputFile);
                     callback.success(localModule);
                 } catch (IOException | InvalidModuleException exception) {
-                    callback.fail(localModule, exception);
+                    callback.fail(null, exception);
                 } finally {
                     downloadingModules.remove(fileName);
                 }
             }));
             downloadingModules.get(fileName).start();
         } catch (MalformedURLException e) {
-            callback.fail(localModule, e);
+            callback.fail(null, e);
         }
     }
 
