@@ -20,6 +20,7 @@ package co.hygames.gamebox.utilities;
 
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import co.hygames.gamebox.utilities.versioning.VersionRangeUtility;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
@@ -32,11 +33,19 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestVersionRangeUtility {
 
     @Test
-    public void testInvalidOperators() {
+    @DisplayName("It should throw IllegalArgumentException if the range contains a plus")
+    public void testInvalidPlusOperator() {
         assertThrows(IllegalArgumentException.class, () -> VersionRangeUtility.isInVersionRange(new SemanticVersion("1.0.0"), "+ 2.1.3"));
     }
 
     @Test
+    @DisplayName("It should throw IllegalArgumentException if the range contains a minus")
+    public void testInvalidMinusOperator() {
+        assertThrows(IllegalArgumentException.class, () -> VersionRangeUtility.isInVersionRange(new SemanticVersion("1.0.0"), "- 2.1.3"));
+    }
+
+    @Test
+    @DisplayName("It should correctly interpret the < operator")
     public void testSmaller() {
         assertAll(
                 () -> assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.4.2"), "< 2.")),
@@ -50,6 +59,7 @@ public class TestVersionRangeUtility {
     }
 
     @Test
+    @DisplayName("It should correctly interpret the <= operator")
     public void testSmallerOrEqual() {
         assertAll(
                 () -> assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.4.2"), "<= 2.")),
@@ -66,6 +76,7 @@ public class TestVersionRangeUtility {
     }
 
     @Test
+    @DisplayName("It should correctly interpret the > operator")
     public void testLarger() {
         assertAll(
                 () -> assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.4.2"), "> 1")),
@@ -77,6 +88,7 @@ public class TestVersionRangeUtility {
     }
 
     @Test
+    @DisplayName("It should correctly interpret the >= operator")
     public void testLargerOrEqual() {
         assertAll(
                 () -> assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.4.2"), ">= 1")),
@@ -89,6 +101,7 @@ public class TestVersionRangeUtility {
     }
 
     @Test
+    @DisplayName("It should correctly interpret the ~> (Twiddle wakka) operator")
     public void testTwiddleWakka() {
         assertAll(
                 () -> assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.4.2"), "~> 1")),
@@ -108,9 +121,12 @@ public class TestVersionRangeUtility {
     }
 
     @Test
+    @DisplayName("It should correctly interpret multiple constraints")
     public void testMultipleConstrains() throws ParseException {
-        assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.4.2"), "    > 1  .,        < 2"));
-        assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.3.5"), "~> 1., >= 1.3.4"));
-        assertFalse(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.3.5"), "~> 1., >= 1.3.6"));
+        assertAll(
+                () -> assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.4.2"), "    > 1  .,        < 2")),
+                () -> assertTrue(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.3.5"), "~> 1., >= 1.3.4")),
+                () -> assertFalse(VersionRangeUtility.isInVersionRange(new SemanticVersion("1.3.5"), "~> 1., >= 1.3.6"))
+        );
     }
 }
