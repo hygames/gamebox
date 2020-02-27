@@ -16,10 +16,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.module;
+package co.hygames.gamebox.module.local;
 
 import co.hygames.gamebox.module.data.DependencyData;
 import co.hygames.gamebox.module.data.LocalModuleData;
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,7 @@ public class TestLocalModuleFile {
                 .withAuthors(Arrays.asList("Nikl"))
                 .withDescription("This module is only for test purposes")
                 .withSourceUrl("https://github.com/hygames-team/gamebox-test-module")
-                .withVersion("1.0.0")
+                .withVersion(new SemanticVersion(1, 0, 0))
                 .withDependencies(Arrays.asList(new DependencyData().withId("gamebox").withVersionConstrain("~> 1.0")
                         , new DependencyData().withId("lib-test-module").withVersionConstrain("~> 1.0, > 1.2")));
     }

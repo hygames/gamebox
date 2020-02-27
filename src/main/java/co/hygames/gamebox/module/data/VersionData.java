@@ -20,6 +20,8 @@ package co.hygames.gamebox.module.data;
 
 import java.io.Serializable;
 import java.util.List;
+
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -29,7 +31,7 @@ import com.google.gson.annotations.SerializedName;
 public class VersionData implements Serializable {
     @SerializedName("version")
     @Expose
-    private String version;
+    private SemanticVersion version;
 
     @SerializedName("updatedAt")
     @Expose
@@ -46,25 +48,6 @@ public class VersionData implements Serializable {
     private final static long serialVersionUID = -2433806999627043447L;
 
     public VersionData() {
-    }
-
-    public VersionData(String version, List<DependencyData> dependencies, List<String> releaseNotes) {
-        this.version = version;
-        this.dependencies = dependencies;
-        this.releaseNotes = releaseNotes;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public VersionData withVersion(String version) {
-        this.version = version;
-        return this;
     }
 
     public Long getUpdatedAt() {
@@ -103,6 +86,19 @@ public class VersionData implements Serializable {
 
     public VersionData withReleaseNotes(List<String> releaseNotes) {
         this.releaseNotes = releaseNotes;
+        return this;
+    }
+
+    public SemanticVersion getVersion() {
+        return version;
+    }
+
+    public void setVersion(SemanticVersion version) {
+        this.version = version;
+    }
+
+    public VersionData withVersion(SemanticVersion version) {
+        this.version = version;
         return this;
     }
 }

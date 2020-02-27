@@ -101,11 +101,7 @@ public class LocalModule extends VersionedModule {
         this.setAuthors(moduleInfo.getAuthors());
         this.setDescription(moduleInfo.getDescription());
         this.setSourceUrl(moduleInfo.getSourceUrl());
-        try {
-            this.setVersion(new SemanticVersion(this.getVersionData().getVersion()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        this.setVersion(this.getVersionData().getVersion());
         return this;
     }
 

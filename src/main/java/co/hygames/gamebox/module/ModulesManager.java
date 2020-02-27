@@ -32,6 +32,7 @@ import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.module.settings.ModulesSettings;
 import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.ModuleUtility;
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -146,12 +147,8 @@ public class ModulesManager {
     private void collectLocalModuleUpdates() {
         hasUpdateAvailable.clear();
         for (String moduleId : localModules.keySet()) {
-            try {
-                if (cloudManager.hasUpdate(localModules.get(moduleId))) {
-                    hasUpdateAvailable.add(moduleId);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if (cloudManager.hasUpdate(localModules.get(moduleId))) {
+                hasUpdateAvailable.add(moduleId);
             }
         }
     }
@@ -181,7 +178,7 @@ public class ModulesManager {
         }
     }
 
-    public void installModule(String moduleId, String version) throws ModuleVersionException {
+    public void installModule(String moduleId, SemanticVersion version) throws ModuleVersionException {
         try {
             installModule(cloudManager.getModuleData(moduleId), version);
         } catch (GameBoxCloudException e) {
@@ -189,7 +186,7 @@ public class ModulesManager {
         }
     }
 
-    public void installModule(CloudModuleData cloudModule, String version) throws ModuleVersionException {
+    public void installModule(CloudModuleData cloudModule, SemanticVersion version) throws ModuleVersionException {
         VersionData matchingVersion = null;
         for (VersionData versionData : cloudModule.getVersions()) {
             if (versionData.getVersion().equals(version)) {
@@ -198,7 +195,7 @@ public class ModulesManager {
             }
         }
         if (matchingVersion == null) {
-            throw new ModuleVersionException("Version '" + version + "' of the module '" + cloudModule.getId() + "' cannot be found");
+            throw new ModuleVersionException("Version '" + version.toString() + "' of the module '" + cloudModule.getId() + "' cannot be found");
         }
         cloudManager.downloadModule(cloudModule, version, new Callback<ModuleInfo>() {
             @Override

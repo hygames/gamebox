@@ -21,6 +21,7 @@ package co.hygames.gamebox.module.data;
 import java.io.Serializable;
 import java.util.List;
 
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -50,7 +51,7 @@ public class CloudModuleData implements ModuleInfo, Serializable {
 
     @SerializedName("latestVersion")
     @Expose
-    private String latestVersion;
+    private SemanticVersion latestVersion;
 
     @SerializedName("lastUpdateAt")
     @Expose
@@ -63,14 +64,6 @@ public class CloudModuleData implements ModuleInfo, Serializable {
     private final static long serialVersionUID = 4719087577866667965L;
 
     public CloudModuleData() {
-    }
-
-    public CloudModuleData(String id, List<String> authors, String name, String description, List<VersionData> versions) {
-        this.id = id;
-        this.authors = authors;
-        this.name = name;
-        this.description = description;
-        this.versions = versions;
     }
 
     public String getId() {
@@ -138,19 +131,6 @@ public class CloudModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
-    public String getLatestVersion() {
-        return latestVersion;
-    }
-
-    public void setLatestVersion(String latestVersion) {
-        this.latestVersion = latestVersion;
-    }
-
-    public CloudModuleData withLatestVersion(String latestVersion) {
-        this.latestVersion = latestVersion;
-        return this;
-    }
-
     public Long getLastUpdateAt() {
         return lastUpdateAt;
     }
@@ -174,6 +154,19 @@ public class CloudModuleData implements ModuleInfo, Serializable {
 
     public CloudModuleData withVersions(List<VersionData> versions) {
         this.versions = versions;
+        return this;
+    }
+
+    public SemanticVersion getLatestVersion() {
+        return latestVersion;
+    }
+
+    public void setLatestVersion(SemanticVersion latestVersion) {
+        this.latestVersion = latestVersion;
+    }
+
+    public CloudModuleData withLatestVersion(SemanticVersion latestVersion) {
+        this.latestVersion = latestVersion;
         return this;
     }
 }

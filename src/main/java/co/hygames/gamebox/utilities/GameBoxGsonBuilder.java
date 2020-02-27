@@ -9,14 +9,27 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package co.hygames.gamebox.utilities;
 
-public class TestFileUtility {
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
+import co.hygames.gamebox.utilities.versioning.SemanticVersionAdapter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+/**
+ * @author Niklas Eicker
+ */
+public class GameBoxGsonBuilder {
+  public static Gson build() {
+    GsonBuilder builder = new GsonBuilder();
+    builder.registerTypeAdapter(SemanticVersion.class, new SemanticVersionAdapter());
+    return builder.create();
+  }
 }

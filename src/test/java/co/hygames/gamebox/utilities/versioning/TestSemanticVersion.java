@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TestSemanticVersioning {
+public class TestSemanticVersion {
 
     @Test
     public void testEquality() throws ParseException {

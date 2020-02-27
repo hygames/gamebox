@@ -36,7 +36,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,23 +85,23 @@ public class CloudManager {
         return cloudModuleData;
     }
 
-    public boolean hasUpdate(LocalModule localModule) throws ParseException {
+    public boolean hasUpdate(LocalModule localModule) {
         CloudModuleData cloudModule = cloudContent.get(localModule.getId());
         if (cloudModule == null) {
             // might be local module
             return false;
         }
-        SemanticVersion localVersion = new SemanticVersion(localModule.getVersionData().getVersion());
-        SemanticVersion newestCloudVersion = new SemanticVersion(cloudModule.getLatestVersion());
+        SemanticVersion localVersion = localModule.getVersionData().getVersion();
+        SemanticVersion newestCloudVersion = cloudModule.getLatestVersion();
         return newestCloudVersion.isUpdateFor(localVersion);
     }
 
-    public void downloadModule(CloudModuleData cloudModule, String version, Callback<ModuleInfo> callback) {
-        final String fileName = cloudModule.getId() + "@" + version + ".jar";
+    public void downloadModule(CloudModuleData cloudModule, SemanticVersion version, Callback<ModuleInfo> callback) {
+        final String fileName = cloudModule.getId() + "@" + version.toString() + ".jar";
         try {
             final File outputFile = new File(gameBox.getModulesManager().getModulesDir(), fileName);
             if (outputFile.isFile()) {
-                gameBox.getLogger().info("Module " + cloudModule.getName() + " @" + version + " already exists...");
+                gameBox.getLogger().info("Module " + cloudModule.getName() + " @" + version.toString() + " already exists...");
                 gameBox.getLogger().info("   skipping download of '" + fileName + "'");
                 try {
                     LocalModule localModule = LocalModule.fromJar(outputFile);

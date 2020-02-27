@@ -18,6 +18,8 @@
 
 package co.hygames.gamebox.module.cloud;
 
+import co.hygames.gamebox.utilities.GameBoxGsonBuilder;
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import co.hygames.gamebox.module.data.DependencyData;
 import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.module.data.VersionData;
@@ -55,8 +57,9 @@ public class TestCloudModuleFromJson {
         dependencies.add(dependency);
         List<VersionData> versions = new ArrayList<>();
         versions.add(new VersionData()
-                .withVersion("1.0.0")
+                .withVersion(new SemanticVersion(1, 0, 0))
                 .withDependencies(dependencies)
+                .withUpdatedAt(1234L)
                 .withReleaseNotes(Arrays.asList(
                         "Changes:",
                         "One change",
@@ -65,8 +68,9 @@ public class TestCloudModuleFromJson {
                 )
         );
         versions.add(new VersionData()
-                .withVersion("1.1.0")
+                .withVersion(new SemanticVersion(1, 1, 0))
                 .withDependencies(dependencies)
+                .withUpdatedAt(1239L)
                 .withReleaseNotes(Arrays.asList(
                         "Some updates..."
                         )
@@ -76,22 +80,26 @@ public class TestCloudModuleFromJson {
                 .withId("test-module")
                 .withAuthors(Arrays.asList("Nikl"))
                 .withName("Test module")
+                .withLastUpdateAt(1239L)
                 .withDescription("This module is only for test purposes")
                 .withVersions(versions)
+                .withLatestVersion(new SemanticVersion(1, 1, 0))
         ;
     }
 
     @Test
-    @DisplayName("Comparing parsed and manually loaded Module")
+    @DisplayName("correctly parse CloudModuleData from a json file")
     public void parseTestCloudModule() throws FileNotFoundException {
-        Gson gson = new Gson();
+        Gson gson = GameBoxGsonBuilder.build();
         CloudModuleData fileModule = gson.fromJson(new FileReader(testCloudModuleFile), CloudModuleData.class);
         assertAll(
                 () -> assertEquals(fileModule.getId(), testCloudModule.getId(),"Not the same id"),
                 () -> assertArrayEquals(fileModule.getAuthors().toArray(), testCloudModule.getAuthors().toArray(),"Not the same authors"),
                 () -> assertEquals(fileModule.getName(), testCloudModule.getName(),"Not the same name"),
                 () -> assertEquals(fileModule.getDescription(), testCloudModule.getDescription(),"Not the same description"),
-                () -> assertEquals(fileModule.getVersions().size(), testCloudModule.getVersions().size(),"Not the same number of versions")
+                () -> assertEquals(fileModule.getVersions().size(), testCloudModule.getVersions().size(),"Not the same number of versions"),
+                () -> assertEquals(fileModule.getLatestVersion(), testCloudModule.getLatestVersion(),"Not the same latest version"),
+                () -> assertEquals(fileModule.getLastUpdateAt(), testCloudModule.getLastUpdateAt(),"Not the same last updated timestamp")
         );
         Iterator<VersionData> itManualModule = testCloudModule.getVersions().iterator();
         Iterator<VersionData> itFileModule = fileModule.getVersions().iterator();
@@ -101,6 +109,7 @@ public class TestCloudModuleFromJson {
             VersionData version2 = itFileModule.next();
             assertEquals(version1.getVersion(), version2.getVersion(),"Versions: Not the same version");
             assertIterableEquals(version1.getReleaseNotes(), version2.getReleaseNotes(), "Versions: Not the same release notes");
+            assertEquals(version1.getUpdatedAt(), version2.getUpdatedAt(), "Versions: Not the same updatedAt timestamp");
             assertEquals(version1.getDependencies().size(), version2.getDependencies().size(),"Versions: Not the same number of dependencies");
 
             Iterator<DependencyData> itManualDependency = version1.getDependencies().iterator();

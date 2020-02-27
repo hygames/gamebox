@@ -49,7 +49,7 @@ public class GameBox {
             final String SOURCE = "https://github.com/hygames-team/gamebox";
             final List<String> AUTHORS = Arrays.asList("Niklas Eicker");
             final List<DependencyData> DEPENDENCIES = new ArrayList<>();
-            final VersionData versionData = new VersionData().withVersion(VERSION.toString()).withDependencies(DEPENDENCIES);
+            final VersionData versionData = new VersionData().withVersion(VERSION).withDependencies(DEPENDENCIES);
             // This instance is simply for easy dependency checking of other modules. By handling GameBox just like
             // any other module dependency, it is made much easier for module authors to depend on a specific GameBox version
             versionInfo = new VersionedModule() {

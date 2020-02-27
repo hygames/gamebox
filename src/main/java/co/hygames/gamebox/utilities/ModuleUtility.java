@@ -20,12 +20,10 @@ package co.hygames.gamebox.utilities;
 
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
-import co.hygames.gamebox.exceptions.module.ModuleDependencyException;
 import co.hygames.gamebox.module.data.DependencyData;
 import co.hygames.gamebox.module.data.LocalModuleData;
 import co.hygames.gamebox.module.data.VersionedModule;
 import co.hygames.gamebox.module.local.LocalModule;
-import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import co.hygames.gamebox.utilities.versioning.VersionRangeUtility;
 
 import java.text.ParseException;
@@ -36,11 +34,6 @@ public class ModuleUtility {
     public static void validateLocalModuleData(LocalModuleData localModuleData) throws InvalidModuleException {
         if (localModuleData.getId() == null || localModuleData.getId().replaceAll("\\s","").isEmpty()) {
             throw new InvalidModuleException("No valid module id found");
-        }
-        try {
-            new SemanticVersion(localModuleData.getVersion());
-        } catch (ParseException e) {
-            throw new InvalidModuleException("No valid semantic version found", e);
         }
     }
 

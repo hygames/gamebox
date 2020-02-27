@@ -89,27 +89,26 @@ public class FileUtility {
     /**
      * Collect all classes of the given type in the provided subfolder of the GameBox folder
      *
-     * @param subFolder to check for classes
+     * @param folder to check for classes
      * @param type classes checked for
      * @return list of found classes
      */
-    public static List<Class<?>> getClasses(String subFolder, Class<?> type) {
-        return getClasses(subFolder, null, type);
+    public static List<Class<?>> getClasses(File folder, Class<?> type) {
+        return getClasses(folder, null, type);
     }
 
     /**
      * Collect all classes of type `type` in the jar file with the provided name
      * in the given subfolder of the GameBox folder
      *
-     * @param subFolder to check for classes
+     * @param folder to check for classes
      * @param fileName look for jar with specific name
      * @param type classes checked for
      * @return list of found classes
      */
-    public static List<Class<?>> getClasses(String subFolder, String fileName, Class<?> type) {
+    public static List<Class<?>> getClasses(File folder, String fileName, Class<?> type) {
         List<Class<?>> list = new ArrayList<>();
         try {
-            File folder = new File(GameBox.getInstance().getDataFolder(), subFolder);
             if (!folder.exists()) {
                 return list;
             }
@@ -181,11 +180,6 @@ public class FileUtility {
         initialStream.read(buffer);
         OutputStream outStream = new FileOutputStream(targetFile);
         outStream.write(buffer);
-    }
-
-    public static List<File> getAllJars(String subFolder) {
-        File folder = new File(GameBox.getInstance().getDataFolder(), subFolder);
-        return getAllJars(folder);
     }
 
     public static List<File> getAllJars(File folder) {

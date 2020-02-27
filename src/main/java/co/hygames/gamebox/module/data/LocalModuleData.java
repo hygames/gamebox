@@ -18,6 +18,8 @@
 
 package co.hygames.gamebox.module.data;
 
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +30,7 @@ public class LocalModuleData implements ModuleInfo, Serializable {
     private String name;
     private String description;
     private String sourceUrl;
-    private String version;
+    private SemanticVersion version;
     private List<DependencyData> dependencies = new ArrayList<>();
 
     private final static long serialVersionUID = 8241484990221433533L;
@@ -98,15 +100,15 @@ public class LocalModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
-    public String getVersion() {
+    public SemanticVersion getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(SemanticVersion version) {
         this.version = version;
     }
 
-    public LocalModuleData withVersion(String version) {
+    public LocalModuleData withVersion(SemanticVersion version) {
         this.version = version;
         return this;
     }
