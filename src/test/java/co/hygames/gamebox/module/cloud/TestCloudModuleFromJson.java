@@ -47,7 +47,7 @@ public class TestCloudModuleFromJson {
 
     @BeforeAll
     public static void prepare() {
-        testCloudModuleFile = new File("src/test/resources/test_cloud_module.json");
+        testCloudModuleFile = new File("src/test/resources/module/cloud/test_cloud_module.json");
         manuallyBuildTestModule();
     }
 

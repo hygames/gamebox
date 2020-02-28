@@ -37,19 +37,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestModuleUtility {
     private static final Map<String, LocalModule> modules = new HashMap<>();
-    private static final Yaml YAML;
-    static {
-        Constructor constructor = new Constructor(LocalModuleData.class);
-        Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
-        YAML = new Yaml(constructor, representer);
-    }
+    private static final Yaml YAML = GameBoxYmlBuilder.buildLocalModuleDataYml();
 
     @BeforeAll
     public static void prepare() {
         for (int i = 1; i < 6; i++) {
             try {
-                LocalModule module = LocalModule.fromJar(new File("src/test/resources/test_local_module_" + i + ".jar"));
+                LocalModule module = LocalModule.fromJar(new File("src/test/resources/module/local/test_local_module_" + i + ".jar"));
                 modules.put(module.getId(), module);
             } catch (InvalidModuleException e) {
                 e.printStackTrace();

@@ -27,10 +27,11 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestLocalModule {
+
     @Test
     @DisplayName("Test loading module from jar file without module.yml")
     public void testModuleFromInvalidFile() {
-        File invalidJarFile = new File("src/test/resources/test_local_module_no_module-yml.jar");
+        File invalidJarFile = new File("src/test/resources/module/local/test_local_module_no_module-yml.jar");
         assertThrows(InvalidModuleException.class, () -> LocalModule.fromJar(invalidJarFile));
     }
 }
