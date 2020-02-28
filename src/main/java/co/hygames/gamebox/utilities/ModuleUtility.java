@@ -18,7 +18,7 @@
 
 package co.hygames.gamebox.utilities;
 
-import co.hygames.gamebox.GameBox;
+import co.hygames.gamebox.GameBoxSettings;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.module.data.DependencyData;
 import co.hygames.gamebox.module.local.LocalModuleData;
@@ -70,7 +70,7 @@ public class ModuleUtility {
 
     public static DependencyReport checkDependencies(Map<String, LocalModule> modules) {
         Map<String, VersionedModule> versionedModules = new HashMap<>(modules);
-        VersionedModule gameBoxModule = GameBox.versionInfo;
+        VersionedModule gameBoxModule = GameBoxSettings.getGameBoxModuleInfo();
         versionedModules.put(gameBoxModule.getId(), gameBoxModule);
         List<String> log = new ArrayList<>();
         boolean foundIssue = true;

@@ -92,7 +92,6 @@ public class GameBox {
     private File dataFolder;
     private File languageFolder;
     private Logger logger;
-    private SemanticVersion version;
 
     public static void main(String[] args) {
         new GameBox().onEnable();
@@ -100,18 +99,14 @@ public class GameBox {
 
     public void onEnable() {
         instance = this;
+        new GameBoxSettings(this);
         // ToDo: testing! remove!
         this.dataFolder = new File("/home/nikl/Desktop/gamebox");
         FileUtility.copyDefaultLanguageFiles();
-        try {
-            setUp();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        setUp();
     }
 
-    private void setUp() throws ParseException {
-        this.version = new SemanticVersion(this.getClass().getPackage().getImplementationVersion());
+    private void setUp() {
         createLogger();
         this.modulesManager = new ModulesManager(this);
         //modulesManager.installModule("test-module");
@@ -151,9 +146,5 @@ public class GameBox {
     public File getLanguageDir() {
         if (languageFolder != null) return languageFolder;
         return languageFolder = new File(getDataFolder(), "language");
-    }
-
-    public SemanticVersion getVersion() {
-        return version;
     }
 }

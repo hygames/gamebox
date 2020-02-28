@@ -18,9 +18,45 @@
 
 package co.hygames.gamebox;
 
-public class GameBoxSettings {
-    public static String LANGUAGE_FILE;
-    public static void load(GameBox instance) {
+import co.hygames.gamebox.exceptions.module.InvalidModuleException;
+import co.hygames.gamebox.module.local.LocalModule;
+import co.hygames.gamebox.module.local.LocalModuleData;
+import co.hygames.gamebox.module.local.VersionedModule;
+import co.hygames.gamebox.utilities.FileUtility;
+import co.hygames.gamebox.utilities.GameBoxYmlBuilder;
+import co.hygames.gamebox.utilities.ModuleUtility;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+public class GameBoxSettings {
+    public String LANGUAGE_FILE;
+    private GameBox instance;
+    private static VersionedModule gameBoxModuleInfo;
+
+    public GameBoxSettings(GameBox instance) {
+        this.instance = instance;
+        this.load();
+    }
+
+    private void load() {
+        this.loadModuleInfo();
+    }
+
+    private void loadModuleInfo() {
+        try {
+            InputStream moduleYml = FileUtility.getResource("module.yml");
+            LocalModuleData moduleData = GameBoxYmlBuilder.buildLocalModuleDataYml().loadAs(new InputStreamReader(moduleYml), LocalModuleData.class);
+            ModuleUtility.validateLocalModuleData(moduleData);
+            ModuleUtility.fillDefaults(moduleData);
+            gameBoxModuleInfo = new LocalModule(moduleData);
+        } catch (IOException | InvalidModuleException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static VersionedModule getGameBoxModuleInfo() {
+        return gameBoxModuleInfo;
     }
 }

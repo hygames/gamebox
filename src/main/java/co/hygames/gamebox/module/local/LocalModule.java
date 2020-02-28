@@ -22,6 +22,7 @@ import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.module.GameBoxModule;
 import co.hygames.gamebox.module.data.*;
 import co.hygames.gamebox.utilities.FileUtility;
+import co.hygames.gamebox.utilities.GameBoxYmlBuilder;
 import co.hygames.gamebox.utilities.ModuleUtility;
 import com.google.gson.Gson;
 import org.yaml.snakeyaml.Yaml;
@@ -43,15 +44,7 @@ import java.util.zip.ZipEntry;
  * @author Niklas Eicker
  */
 public class LocalModule extends VersionedModule {
-    private static final Gson GSON = new Gson();
-    private static final Yaml YAML;
-    static {
-        Constructor constructor = new Constructor(LocalModuleData.class);
-        Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
-        YAML = new Yaml(constructor, representer);
-    }
-
+    private static final Yaml YAML = GameBoxYmlBuilder.buildLocalModuleDataYml();
     private String moduleId;
     private String name;
     private String description;
@@ -65,7 +58,7 @@ public class LocalModule extends VersionedModule {
     private Set<String> childModules = new HashSet<>();
     private Set<String> parentModules = new HashSet<>();
 
-    private LocalModule(LocalModuleData localModuleData) {
+    public LocalModule(LocalModuleData localModuleData) {
         this.moduleId = localModuleData.getId();
         this.name = localModuleData.getName();
         this.description = localModuleData.getDescription();
