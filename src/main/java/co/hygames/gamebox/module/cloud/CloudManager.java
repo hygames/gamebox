@@ -23,7 +23,7 @@ import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.GameBoxCloudException;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.module.data.CloudModuleData;
-import co.hygames.gamebox.module.data.ModuleInfo;
+import co.hygames.gamebox.module.data.ModuleBasicData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
@@ -32,10 +32,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,36 +46,35 @@ public class CloudManager {
     private static final Gson GSON = new Gson();
 
     private GameBox gameBox;
+    private CloudFacade facade;
     private Map<String, CloudModuleData> cloudContent = new HashMap<>();
     private Map<String, Thread> downloadingModules = new HashMap<>();
 
-    public CloudManager(GameBox gameBox) {
+    public CloudManager(GameBox gameBox, CloudFacade facade) {
         this.gameBox = gameBox;
+        this.facade = facade;
     }
 
     public void updateCloudContent() throws GameBoxCloudException {
-        try {
-            CloudModuleData[] modulesData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules").openStream()), CloudModuleData[].class);
-            cloudContent.clear();
-            for (CloudModuleData moduleData : modulesData) {
-                cloudContent.put(moduleData.getId(), moduleData);
-                gameBox.getLogger().info("got moduledata for id:'" + moduleData.getId() + "'");
-            }
-        } catch (UnknownHostException e) {
-            throw new GameBoxCloudException("Connection problem to the cloud. Please make sure that you are connected to the internet.", e);
-        } catch (IOException e) {
-            throw new GameBoxCloudException(e);
+        ApiResponse<CloudModuleData[]> response = this.facade.getCloudModuleData();
+        if (response.getError() != null) {
+            throw response.getError();
+        }
+        cloudContent.clear();
+        for (CloudModuleData moduleData : response.getData()) {
+            cloudContent.put(moduleData.getId(), moduleData);
+            gameBox.getLogger().info("got moduledata for id:'" + moduleData.getId() + "'");
         }
     }
 
-    public void updateCloudModule(String moduleId) throws GameBoxCloudException {
-        try {
-            CloudModuleData moduleData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules/" + moduleId).openStream()), CloudModuleData.class);
-            cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
-        } catch (IOException e) {
-            throw new GameBoxCloudException(e);
-        }
-    }
+//    public void updateCloudModule(String moduleId) throws GameBoxCloudException {
+//        try {
+//            CloudModuleData moduleData = GSON.fromJson(new InputStreamReader(new URL(API_BASE_URL + "modules/" + moduleId).openStream()), CloudModuleData.class);
+//            cloudContent.put(String.valueOf(moduleData.getId()), moduleData);
+//        } catch (IOException e) {
+//            throw new GameBoxCloudException(e);
+//        }
+//    }
 
     public CloudModuleData getModuleData(String moduleID) throws GameBoxCloudException {
         CloudModuleData cloudModuleData = cloudContent.get(moduleID);
@@ -96,7 +93,7 @@ public class CloudManager {
         return newestCloudVersion.isUpdateFor(localVersion);
     }
 
-    public void downloadModule(CloudModuleData cloudModule, SemanticVersion version, Callback<ModuleInfo> callback) {
+    public void downloadModule(CloudModuleData cloudModule, SemanticVersion version, Callback<ModuleBasicData> callback) {
         final String fileName = cloudModule.getId() + "@" + version.toString() + ".jar";
         try {
             final File outputFile = new File(gameBox.getModulesManager().getModulesDir(), fileName);

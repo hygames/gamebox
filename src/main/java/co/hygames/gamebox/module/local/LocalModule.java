@@ -23,7 +23,6 @@ import co.hygames.gamebox.module.GameBoxModule;
 import co.hygames.gamebox.module.data.*;
 import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.ModuleUtility;
-import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import com.google.gson.Gson;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -33,12 +32,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 /**
  * @author Niklas Eicker
@@ -59,7 +58,6 @@ public class LocalModule extends VersionedModule {
     private String sourceUrl;
     private List<String> authors;
     private VersionData versionData;
-    private SemanticVersion version;
     private File moduleJar;
 
     // These sets are filled with dependencies and dependent modules during loading
@@ -67,14 +65,13 @@ public class LocalModule extends VersionedModule {
     private Set<String> childModules = new HashSet<>();
     private Set<String> parentModules = new HashSet<>();
 
-    private LocalModule(String id, VersionData version) {
-        this.moduleId = id;
-        this.versionData = version;
-    }
-
-    private static LocalModule fromLocalModuleData(LocalModuleData moduleData) {
-        LocalModule instance = new LocalModule(moduleData.getId(), new VersionData().withVersion(moduleData.getVersion()).withDependencies(moduleData.getDependencies()));
-        return instance.fillInfo(moduleData);
+    private LocalModule(LocalModuleData localModuleData) {
+        this.moduleId = localModuleData.getId();
+        this.name = localModuleData.getName();
+        this.description = localModuleData.getDescription();
+        this.sourceUrl = localModuleData.getSourceUrl();
+        this.authors = localModuleData.getAuthors();
+        this.versionData = localModuleData.getVersionData();
     }
 
     /*public static LocalModule fromCloudModuleData(CloudModuleData moduleData) throws ModuleVersionException {
@@ -96,30 +93,21 @@ public class LocalModule extends VersionedModule {
         return instance.fillInfo(moduleData);
     }**/
 
-    private LocalModule fillInfo(ModuleInfo moduleInfo) {
-        this.setName(moduleInfo.getName());
-        this.setAuthors(moduleInfo.getAuthors());
-        this.setDescription(moduleInfo.getDescription());
-        this.setSourceUrl(moduleInfo.getSourceUrl());
-        this.setVersion(this.getVersionData().getVersion());
-        return this;
-    }
-
     public static LocalModule fromJar(File jar) throws InvalidModuleException {
         JarFile jarFile;
         LocalModule localModule = null;
         try {
             jarFile = new JarFile(jar);
-            InputStream moduleFile = jarFile.getInputStream(jarFile
-                    .stream()
-                    .filter(e -> e.getName().equals("module.yml"))
-                    .findFirst()
-                    .orElseThrow(() -> new InvalidModuleException("No 'module.yml' found for " + jar.getName())));
+            ZipEntry moduleYml = jarFile.getEntry("module.yml");
+            if (moduleYml == null) {
+                throw new InvalidModuleException("No 'module.yml' found for " + jar.getName());
+            }
+            InputStream moduleFile = jarFile.getInputStream(moduleYml);
             LocalModuleData moduleData = YAML.loadAs(new InputStreamReader(moduleFile), LocalModuleData.class);
             ModuleUtility.validateLocalModuleData(moduleData);
             ModuleUtility.fillDefaults(moduleData);
             jarFile.close();
-            localModule = fromLocalModuleData(moduleData);
+            localModule = new LocalModule(moduleData);
             localModule.setModuleJar(jar);
         } catch (IOException e) {
             e.printStackTrace();
@@ -160,6 +148,7 @@ public class LocalModule extends VersionedModule {
         return this.sourceUrl;
     }
 
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -175,18 +164,6 @@ public class LocalModule extends VersionedModule {
 
     public void setAuthors(List<String> authors) {
         this.authors = authors;
-    }
-
-    public SemanticVersion getVersion() {
-        return this.version;
-    }
-
-    public void setVersion(SemanticVersion version) {
-        this.version = version;
-    }
-
-    public boolean sameIdAndVersion(LocalModule localModule) {
-        return this.moduleId.equals(localModule.getId()) && this.getVersion().equals(localModule.getVersion());
     }
 
     public boolean isChildModule(String moduleId) {
@@ -223,5 +200,12 @@ public class LocalModule extends VersionedModule {
 
     public void setSourceUrl(String sourceUrl) {
         this.sourceUrl = sourceUrl;
+    }
+
+    @Override
+    public boolean equals(Object compareTo) {
+        if (!(compareTo instanceof LocalModule)) return false;
+        LocalModule compareToModule = (LocalModule) compareTo;
+        return compareToModule.getId().equals(this.getId()) && compareToModule.getVersionData().getVersion().equals(this.getVersionData().getVersion());
     }
 }

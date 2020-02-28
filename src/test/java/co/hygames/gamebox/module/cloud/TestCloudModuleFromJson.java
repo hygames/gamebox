@@ -18,10 +18,10 @@
 
 package co.hygames.gamebox.module.cloud;
 
+import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.utilities.GameBoxGsonBuilder;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 import co.hygames.gamebox.module.data.DependencyData;
-import co.hygames.gamebox.module.data.CloudModuleData;
 import co.hygames.gamebox.module.data.VersionData;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.DisplayName;

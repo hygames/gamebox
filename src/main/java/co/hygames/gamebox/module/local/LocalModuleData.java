@@ -16,7 +16,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.module.data;
+package co.hygames.gamebox.module.local;
+
+import co.hygames.gamebox.module.data.*;
 
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 
@@ -24,17 +26,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalModuleData implements ModuleInfo, Serializable {
+public class LocalModuleData implements ModuleBasicData, VersionedModuleData, ModuleWithVersionData, Serializable {
     private String id;
     private List<String> authors = new ArrayList<>();
     private String name;
     private String description;
     private String sourceUrl;
+    private long updatedAt = -1;
+    private List<String> releaseNotes = new ArrayList<>();
     private SemanticVersion version;
     private List<DependencyData> dependencies = new ArrayList<>();
 
     private final static long serialVersionUID = 8241484990221433533L;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -48,6 +53,7 @@ public class LocalModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
+    @Override
     public List<String> getAuthors() {
         return authors;
     }
@@ -61,6 +67,7 @@ public class LocalModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -74,6 +81,7 @@ public class LocalModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -87,6 +95,7 @@ public class LocalModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
+    @Override
     public String getSourceUrl() {
         return sourceUrl;
     }
@@ -100,6 +109,7 @@ public class LocalModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
+    @Override
     public SemanticVersion getVersion() {
         return version;
     }
@@ -113,6 +123,21 @@ public class LocalModuleData implements ModuleInfo, Serializable {
         return this;
     }
 
+    @Override
+    public Long getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LocalModuleData withUpdatedAt(long updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    @Override
     public List<DependencyData> getDependencies() {
         return dependencies;
     }
@@ -124,5 +149,19 @@ public class LocalModuleData implements ModuleInfo, Serializable {
     public LocalModuleData withDependencies(List<DependencyData> dependencies) {
         this.dependencies = dependencies;
         return this;
+    }
+
+    @Override
+    public List<String> getReleaseNotes() {
+        return this.releaseNotes;
+    }
+
+    @Override
+    public VersionData getVersionData() {
+        return new VersionData()
+                .withUpdatedAt(getUpdatedAt())
+                .withReleaseNotes(getReleaseNotes())
+                .withDependencies(getDependencies())
+                .withVersion(getVersion());
     }
 }
