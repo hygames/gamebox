@@ -16,12 +16,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.player;
+package co.hygames.gamebox.module.local;
 
-/**
- * Cache online players
- *
- * Load from the database on log-in and save them to the database when they log out
- */
-public class PlayerCache {
+import co.hygames.gamebox.module.data.VersionData;
+
+public interface ModuleWithVersionData {
+
+    VersionData getVersionData();
 }

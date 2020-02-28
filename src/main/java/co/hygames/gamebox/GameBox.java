@@ -21,7 +21,7 @@ package co.hygames.gamebox;
 import co.hygames.gamebox.module.ModulesManager;
 import co.hygames.gamebox.module.data.DependencyData;
 import co.hygames.gamebox.module.data.VersionData;
-import co.hygames.gamebox.module.data.VersionedModule;
+import co.hygames.gamebox.module.local.VersionedModule;
 import co.hygames.gamebox.utilities.FileUtility;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 
@@ -56,11 +56,6 @@ public class GameBox {
                 @Override
                 public VersionData getVersionData() {
                     return versionData;
-                }
-
-                @Override
-                public SemanticVersion getVersion() {
-                    return VERSION;
                 }
 
                 @Override

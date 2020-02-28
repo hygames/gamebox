@@ -18,7 +18,17 @@
 
 package co.hygames.gamebox.module.data;
 
-public abstract class VersionedModule implements ModuleInfo, ModuleVersionInfo {
+import co.hygames.gamebox.utilities.versioning.SemanticVersion;
 
-    public abstract VersionData getVersionData();
+import java.util.List;
+
+public interface VersionedModuleData {
+
+    SemanticVersion getVersion();
+
+    Long getUpdatedAt();
+
+    List<DependencyData> getDependencies();
+
+    List<String> getReleaseNotes();
 }

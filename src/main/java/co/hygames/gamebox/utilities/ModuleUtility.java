@@ -21,8 +21,8 @@ package co.hygames.gamebox.utilities;
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
 import co.hygames.gamebox.module.data.DependencyData;
-import co.hygames.gamebox.module.data.LocalModuleData;
-import co.hygames.gamebox.module.data.VersionedModule;
+import co.hygames.gamebox.module.local.LocalModuleData;
+import co.hygames.gamebox.module.local.VersionedModule;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.utilities.versioning.VersionRangeUtility;
 
@@ -95,14 +95,14 @@ public class ModuleUtility {
                     }
                     if (dependencyData.getVersionConstrain() == null || dependencyData.getVersionConstrain().isEmpty()) continue;
                     try {
-                        if (!VersionRangeUtility.isInVersionRange(dependency.getVersion(), dependencyData.getVersionConstrain())) {
+                        if (!VersionRangeUtility.isInVersionRange(dependency.getVersionData().getVersion(), dependencyData.getVersionConstrain())) {
                             if (dependencyData.isSoftDependency()) {
                                 continue;
                             }
                             log.add("'" + currentModule.getId() + "' asks for '"
                                     + dependency.getId() + "' with the version constrain '"
                                     + dependencyData.getVersionConstrain() + "'");
-                            log.add("   The installed version is '" + dependency.getVersion().toString() + "'" );
+                            log.add("   The installed version is '" + dependency.getVersionData().getVersion().toString() + "'" );
                             foundIssue = true;
                             versionedModule.remove();
                             break;

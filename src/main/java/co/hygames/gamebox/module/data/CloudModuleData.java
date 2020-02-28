@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @author Niklas Eicker
  */
-public class CloudModuleData implements ModuleInfo, Serializable {
+public class CloudModuleData implements ModuleBasicData, Serializable {
     @SerializedName("id")
     @Expose
     private String id;

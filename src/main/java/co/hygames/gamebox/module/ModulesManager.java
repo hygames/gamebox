@@ -21,12 +21,12 @@ package co.hygames.gamebox.module;
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.database.Callback;
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
-import co.hygames.gamebox.exceptions.module.ModuleDependencyException;
 import co.hygames.gamebox.exceptions.module.ModuleVersionException;
+import co.hygames.gamebox.module.cloud.CloudFacade;
 import co.hygames.gamebox.module.cloud.CloudManager;
 import co.hygames.gamebox.exceptions.module.GameBoxCloudException;
 import co.hygames.gamebox.module.data.CloudModuleData;
-import co.hygames.gamebox.module.data.ModuleInfo;
+import co.hygames.gamebox.module.data.ModuleBasicData;
 import co.hygames.gamebox.module.data.VersionData;
 import co.hygames.gamebox.module.local.LocalModule;
 import co.hygames.gamebox.module.settings.ModulesSettings;
@@ -38,9 +38,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * @author Niklas Eicker
@@ -103,7 +101,7 @@ public class ModulesManager {
     }
 
     private void connectToCloud() {
-        this.cloudManager = new CloudManager(gameBox);
+        this.cloudManager = new CloudManager(gameBox, new CloudFacade());
         try {
             cloudManager.updateCloudContent();
         } catch (GameBoxCloudException e) {
@@ -167,7 +165,7 @@ public class ModulesManager {
         gameBox.getLogger().fine("Install module '" + moduleId +"'...");
         try {
             CloudModuleData cloudModule = cloudManager.getModuleData(moduleId);
-            if (localModules.containsKey(moduleId) && localModules.get(moduleId).getVersion().toString().equals(cloudModule.getLatestVersion())) {
+            if (localModules.containsKey(moduleId) && localModules.get(moduleId).getVersionData().getVersion().equals(cloudModule.getLatestVersion())) {
                 // module already installed!
                 gameBox.getLogger().fine("Attempted to install already installed module '" + moduleId +"' @" + cloudModule.getLatestVersion());
                 return;
@@ -197,9 +195,9 @@ public class ModulesManager {
         if (matchingVersion == null) {
             throw new ModuleVersionException("Version '" + version.toString() + "' of the module '" + cloudModule.getId() + "' cannot be found");
         }
-        cloudManager.downloadModule(cloudModule, version, new Callback<ModuleInfo>() {
+        cloudManager.downloadModule(cloudModule, version, new Callback<ModuleBasicData>() {
             @Override
-            public void success(ModuleInfo result) {
+            public void success(ModuleBasicData result) {
                 if(!(result instanceof LocalModule)) {
                     throw new IllegalArgumentException("A successfully downloaded Module should result in a LocalModule instance");
                 }
@@ -212,7 +210,7 @@ public class ModulesManager {
             }
 
             @Override
-            public void fail(ModuleInfo defaultResult, Exception exception) {
+            public void fail(ModuleBasicData defaultResult, Exception exception) {
                 gameBox.getLogger().severe("Error while downloading module '" + defaultResult.getName() + "' version " + version);
                 if (exception != null) exception.printStackTrace();
             }
@@ -239,7 +237,7 @@ public class ModulesManager {
         try {
             instance.onEnable();
         } catch (Exception e) { // catch all and skip module if there is an exception in onEnable
-            gameBox.getLogger().severe("Exception while enabling " + localModule.getName() + " @" + localModule.getVersion().toString() + ":");
+            gameBox.getLogger().severe("Exception while enabling " + localModule.getName() + " @" + localModule.getVersionData().getVersion().toString() + ":");
             e.printStackTrace();
             unloadModule(localModule);
             return;
@@ -253,7 +251,7 @@ public class ModulesManager {
             try {
                 instance.onDisable();
             } catch (Exception e) {
-                gameBox.getLogger().severe("Exception while disabling " + localModule.getName() + " @" + localModule.getVersion().toString() + ":");
+                gameBox.getLogger().severe("Exception while disabling " + localModule.getName() + " @" + localModule.getVersionData().getVersion().toString() + ":");
                 e.printStackTrace();
             } finally {
                 loadedModules.remove(localModule.getId());

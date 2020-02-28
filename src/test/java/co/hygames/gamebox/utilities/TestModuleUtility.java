@@ -19,8 +19,7 @@
 package co.hygames.gamebox.utilities;
 
 import co.hygames.gamebox.exceptions.module.InvalidModuleException;
-import co.hygames.gamebox.exceptions.module.ModuleDependencyException;
-import co.hygames.gamebox.module.data.LocalModuleData;
+import co.hygames.gamebox.module.local.LocalModuleData;
 import co.hygames.gamebox.module.local.LocalModule;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +36,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestModuleUtility {
-    private static Map<String, LocalModule> modules = new HashMap<>();
+    private static final Map<String, LocalModule> modules = new HashMap<>();
     private static final Yaml YAML;
     static {
         Constructor constructor = new Constructor(LocalModuleData.class);

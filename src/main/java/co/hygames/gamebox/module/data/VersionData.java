@@ -28,7 +28,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * @author Niklas Eicker
  */
-public class VersionData implements Serializable {
+public class VersionData implements Serializable, VersionedModuleData {
     @SerializedName("version")
     @Expose
     private SemanticVersion version;

@@ -18,9 +18,16 @@
 
 package co.hygames.gamebox.module.data;
 
-import co.hygames.gamebox.utilities.versioning.SemanticVersion;
+import java.util.List;
 
-public interface ModuleVersionInfo {
+public interface ModuleBasicData {
+    String getId();
 
-    SemanticVersion getVersion();
+    List<String> getAuthors();
+
+    String getName();
+
+    String getDescription();
+
+    String getSourceUrl();
 }

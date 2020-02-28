@@ -16,18 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.module.data;
+package co.hygames.gamebox.module.local;
 
-import java.util.List;
+import co.hygames.gamebox.module.data.ModuleBasicData;
+import co.hygames.gamebox.module.data.VersionData;
 
-public interface ModuleInfo {
-    String getId();
+public abstract class VersionedModule implements ModuleBasicData, ModuleWithVersionData {
 
-    List<String> getAuthors();
-
-    String getName();
-
-    String getDescription();
-
-    String getSourceUrl();
+    public abstract VersionData getVersionData();
 }
