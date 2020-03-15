@@ -21,7 +21,7 @@ package co.hygames.gamebox.language;
 import co.hygames.gamebox.exceptions.language.LanguageException;
 import co.hygames.gamebox.exceptions.language.MissingListException;
 import co.hygames.gamebox.exceptions.language.MissingMessageException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 
 import java.io.File;
