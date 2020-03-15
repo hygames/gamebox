@@ -16,22 +16,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.module.local;
+package co.hygames.gamebox.exceptions.language;
 
-import co.hygames.gamebox.exceptions.module.InvalidModuleException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import co.hygames.gamebox.exceptions.GameBoxRuntimeException;
 
-import java.io.File;
+/**
+ * Thrown if a message is missing in the configured language file AND in the default file
+ */
+public class MissingListException extends GameBoxRuntimeException {
+    private static final long serialVersionUID = 1L;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-public class TestLocalModule {
-
-    @Test
-    @DisplayName("Test loading module from jar file without module.yml")
-    public void testModuleFromInvalidFile() {
-        File invalidJarFile = new File("src/test/resources/module/local/test_local_module_no_module-yml.jar");
-        assertThrows(InvalidModuleException.class, () -> LocalModule.fromJar(invalidJarFile));
+    public MissingListException(String message) {
+        super(message);
     }
 }

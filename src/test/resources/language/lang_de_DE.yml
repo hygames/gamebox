@@ -1,0 +1,5 @@
+name: "Deutscher name"
+singleString: "Dies ist ein Test"
+list:
+  - "einziger Eintrag"
+anotherOneBitesTheDust: "Coole band"

@@ -34,7 +34,7 @@ public class TestCloud {
     @BeforeAll
     public static void beforeClass() {
         try {
-            modules = (new JSONParser()).parse(new FileReader(new File("src/test/resources/test_cloud_modules.json"))).toString();
+            modules = (new JSONParser()).parse(new FileReader(new File("src/test/resources/module/cloud/test_cloud_modules.json"))).toString();
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }

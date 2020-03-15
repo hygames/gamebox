@@ -16,22 +16,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package co.hygames.gamebox.module.local;
+package co.hygames.gamebox.utilities;
 
-import co.hygames.gamebox.exceptions.module.InvalidModuleException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import co.hygames.gamebox.module.local.LocalModuleData;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
-import java.io.File;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-public class TestLocalModule {
-
-    @Test
-    @DisplayName("Test loading module from jar file without module.yml")
-    public void testModuleFromInvalidFile() {
-        File invalidJarFile = new File("src/test/resources/module/local/test_local_module_no_module-yml.jar");
-        assertThrows(InvalidModuleException.class, () -> LocalModule.fromJar(invalidJarFile));
+public class GameBoxYmlBuilder {
+    public static Yaml buildLocalModuleDataYml() {
+        Constructor constructor = new Constructor(LocalModuleData.class);
+        Representer representer = new Representer();
+        representer.getPropertyUtils().setSkipMissingProperties(true);
+        return new Yaml(constructor, representer);
     }
 }

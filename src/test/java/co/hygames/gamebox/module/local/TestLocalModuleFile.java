@@ -19,14 +19,12 @@
 package co.hygames.gamebox.module.local;
 
 import co.hygames.gamebox.module.data.DependencyData;
+import co.hygames.gamebox.utilities.GameBoxYmlBuilder;
 import co.hygames.gamebox.utilities.versioning.SemanticVersion;
-import co.hygames.gamebox.module.local.LocalModuleData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,17 +36,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestLocalModuleFile {
     private static File testLocalModuleFile;
     private static LocalModuleData manualLocalModuleData;
-    private static final Yaml YAML;
-    static {
-        Constructor constructor = new Constructor(LocalModuleData.class);
-        Representer representer = new Representer();
-        representer.getPropertyUtils().setSkipMissingProperties(true);
-        YAML = new Yaml(constructor, representer);
-    }
+    private static final Yaml YAML = GameBoxYmlBuilder.buildLocalModuleDataYml();
 
     @BeforeAll
     public static void prepare() {
-        testLocalModuleFile = new File("src/test/resources/test_local_module_1.yml");
+        testLocalModuleFile = new File("src/test/resources/module/local/test_local_module_1.yml");
         manuallyBuildTestModule();
     }
 

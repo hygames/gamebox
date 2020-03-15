@@ -1,0 +1,11 @@
+name: "Test name"
+singleString: "Hi"
+list:
+  - "first entry"
+  - "#2"
+anotherOneBitesTheDust: "Queen"
+section:
+  secondList:
+    - "Hey"
+    - "There"
+  hello: "Hello"

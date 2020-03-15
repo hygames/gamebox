@@ -20,6 +20,7 @@ package co.hygames.gamebox.language;
 
 import co.hygames.gamebox.GameBox;
 import co.hygames.gamebox.exceptions.language.LanguageException;
+import co.hygames.gamebox.exceptions.language.MissingListException;
 import co.hygames.gamebox.exceptions.language.MissingMessageException;
 import co.hygames.gamebox.language.messages.Message;
 import co.hygames.gamebox.language.messages.MessageSource;
@@ -49,15 +50,15 @@ public abstract class Language implements MessageSource {
         setup(languageFolder, languageFolder, languageFile, defaultLanguage);
     }
 
-    protected void setup(File languageFolder, File jarFile, String languageFile) throws LanguageException {
-        setup(languageFolder, jarFile, languageFile, defaultLanguage);
+    protected void setup(File languageFolder, File source, String languageFile) throws LanguageException {
+        setup(languageFolder, source, languageFile, defaultLanguage);
     }
 
-    protected void setup(File languageFolder, File jarFile, String languageFile, String defaultFile) throws LanguageException {
-        if (jarFile.getName().endsWith(".jar")) {
-            loadMessagesFromJar(jarFile, defaultFile);
+    protected void setup(File languageFolder, File source, String languageFile, String defaultFile) throws LanguageException {
+        if (source.getName().endsWith(".jar")) {
+            loadMessagesFromJar(source, defaultFile);
         } else {
-            loadMessagesFromFolder(jarFile, defaultFile);
+            loadMessagesFromFolder(source, defaultFile);
         }
         loadMessagesFromFolder(languageFolder, languageFile);
     }
@@ -183,6 +184,8 @@ public abstract class Language implements MessageSource {
 
     @Override
     public Message<List<String>> getMessageList(String key) {
-        return lists.get(key);
+        Message<List<String>> list = lists.get(key);
+        if (list != null) return list;
+        throw new MissingListException("Unknown List key '" + key + "'");
     }
 }
