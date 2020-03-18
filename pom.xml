@@ -37,10 +37,24 @@
         </repository>
     </distributionManagement>
 
+    <organization>
+        <name>Hygames</name>
+        <url>https://www.hygames.dev</url>
+    </organization>
+
     <scm>
         <url>https://github.com/hygames-team/gamebox</url>
         <connection>git@github.com:hygames-team/gamebox.git</connection>
     </scm>
+
+    <developers>
+        <developer>
+            <id>NiklasEi</id>
+            <name>Niklas Eicker</name>
+            <email>hello@nikl.me</email>
+            <url>https://www.nikl.me</url>
+        </developer>
+    </developers>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
